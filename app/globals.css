@@ -1,0 +1,44 @@
+@import 'tailwindcss';
+
+:root {
+  --kc-background: #f5efdf;
+  --kc-surface: #fffaf0;
+  --kc-text: #2a241d;
+  --kc-muted: #6d6254;
+  --kc-line: #dbcdb7;
+  --kc-accent: #7a8f62;
+  --kc-accent-strong: #5e7448;
+  --kc-warm: #c89b6d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--kc-background);
+  color: var(--kc-text);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.75), transparent 40%),
+    linear-gradient(180deg, #f9f3e6 0%, #f1e7d2 100%);
+  font-family:
+    'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia,
+    serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
