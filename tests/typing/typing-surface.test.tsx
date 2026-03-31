@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
+import { SessionSummary } from '@/components/typing/session-summary'
 import { TypingSurface } from '@/components/typing/typing-surface'
 
 const prompt = {
@@ -51,5 +52,31 @@ describe('TypingSurface', () => {
         isComplete: true,
       }),
     )
+  })
+})
+
+describe('SessionSummary', () => {
+  it('renders session metrics and a focus recommendation', () => {
+    render(
+      <SessionSummary
+        metrics={{
+          elapsedMs: 4000,
+          correctCharacters: 4,
+          characterInputCount: 6,
+          correctedErrors: 2,
+          accuracy: 66.7,
+          wpm: 12,
+          cleanRun: false,
+        }}
+        onTryAnother={() => undefined}
+        prompt={prompt}
+      />,
+    )
+
+    expect(
+      screen.getByRole('heading', { name: /session complete/i }),
+    ).toBeInTheDocument()
+    expect(screen.getByText(/66.7%/i)).toBeInTheDocument()
+    expect(screen.getByText(/focus next/i)).toBeInTheDocument()
   })
 })
