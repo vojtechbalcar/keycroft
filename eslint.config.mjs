@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
   },
   globalIgnores([
     '.next/**',
+    '.worktrees/**',
+    '.playwright/**',
     'out/**',
     'build/**',
     'coverage/**',
