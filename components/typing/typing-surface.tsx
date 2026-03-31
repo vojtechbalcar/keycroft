@@ -30,15 +30,6 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    setSession(createTypingSession(prompt.text))
-    setNow(0)
-  }, [prompt])
-
-  useEffect(() => {
-    inputRef.current?.focus()
-  }, [prompt])
-
-  useEffect(() => {
     if (session.startedAt === null || session.isComplete) {
       return
     }
@@ -90,6 +81,7 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
     >
       <input
         aria-label="Typing input"
+        autoFocus
         className="sr-only"
         onChange={() => undefined}
         onKeyDown={handleKeyDown}
