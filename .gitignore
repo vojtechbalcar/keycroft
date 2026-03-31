@@ -24,6 +24,7 @@ supabase/.temp/
 supabase/.cache/
 
 # Testing
+.playwright/
 playwright-report/
 test-results/
 
