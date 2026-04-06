@@ -1,7 +1,7 @@
 export function VillageScene() {
   return (
     <figure
-      aria-label="Your village — dormant, waiting for you to begin"
+      aria-label="Village map — your world grows as you practice"
       className="h-full w-full"
       role="img"
     >
@@ -9,361 +9,513 @@ export function VillageScene() {
         aria-hidden="true"
         className="h-full w-full"
         fill="none"
-        viewBox="0 0 900 420"
+        viewBox="0 0 900 500"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <linearGradient id="vs-fade-left" x1="0%" x2="100%" y1="0%" y2="0%">
-            <stop offset="0%" stopColor="#f5efdf" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#f5efdf" stopOpacity="0" />
+          {/* Fog of war — transparent at hub, heavy at edges */}
+          <radialGradient cx="50%" cy="57%" id="vs-fog" r="50%">
+            <stop offset="0%" stopColor="#ede3cc" stopOpacity="0" />
+            <stop offset="50%" stopColor="#ede3cc" stopOpacity="0" />
+            <stop offset="72%" stopColor="#ede3cc" stopOpacity="0.38" />
+            <stop offset="100%" stopColor="#ede3cc" stopOpacity="0.90" />
+          </radialGradient>
+
+          {/* River water */}
+          <linearGradient id="vs-water" x1="0%" x2="0%" y1="0%" y2="100%">
+            <stop offset="0%" stopColor="#a4bfbc" />
+            <stop offset="100%" stopColor="#8aacaa" />
           </linearGradient>
-          <linearGradient
-            id="vs-fade-right"
-            x1="0%"
-            x2="100%"
-            y1="0%"
-            y2="0%"
-          >
-            <stop offset="0%" stopColor="#f5efdf" stopOpacity="0" />
-            <stop offset="100%" stopColor="#f5efdf" stopOpacity="0.85" />
-          </linearGradient>
-          <linearGradient
-            id="vs-fade-bottom"
-            x1="0%"
-            x2="0%"
-            y1="0%"
-            y2="100%"
-          >
-            <stop offset="0%" stopColor="#f5efdf" stopOpacity="0" />
-            <stop offset="100%" stopColor="#f5efdf" stopOpacity="0.6" />
-          </linearGradient>
-          <linearGradient
-            id="vs-fade-top"
-            x1="0%"
-            x2="0%"
-            y1="0%"
-            y2="100%"
-          >
-            <stop offset="0%" stopColor="#f5efdf" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#f5efdf" stopOpacity="0" />
-          </linearGradient>
+
+          {/* Central clearing glow */}
+          <radialGradient cx="50%" cy="57%" id="vs-clearing" r="28%">
+            <stop offset="0%" stopColor="#d8eab4" stopOpacity="0.7" />
+            <stop offset="100%" stopColor="#d8eab4" stopOpacity="0" />
+          </radialGradient>
         </defs>
 
-        {/* ── Layer 1: distant hills ── */}
-        <path
-          d="M 0 145 Q 150 90 300 128 Q 450 166 600 112 Q 750 68 900 115 L 900 420 L 0 420 Z"
-          fill="#d0c0a0"
-          opacity="0.62"
-        />
+        {/* ── Base terrain ── */}
+        <rect fill="#ede3cc" height="500" width="900" x="0" y="0" />
 
-        {/* ── Layer 2: mid hills ── */}
-        <path
-          d="M 0 222 Q 130 186 280 210 Q 430 234 580 196 Q 730 162 900 200 L 900 420 L 0 420 Z"
-          fill="#c4b490"
-        />
-
-        {/* ── Distant building silhouette (far left background) ── */}
-        <rect
-          fill="#cfc0a0"
-          height="34"
-          opacity="0.38"
-          rx="2"
-          width="54"
-          x="108"
-          y="232"
-        />
-        <path
-          d="M 100 235 L 135 212 L 170 235 Z"
-          fill="#b8a888"
-          opacity="0.38"
-        />
-
-        {/* ── Layer 3: ground ── */}
-        <path
-          d="M 0 300 Q 220 278 450 288 Q 680 298 900 280 L 900 420 L 0 420 Z"
-          fill="#dfd0b4"
-        />
-
-        {/* ── Stone path (tapered for perspective) ── */}
-        <path d="M 416 420 L 432 304 L 452 304 L 468 420 Z" fill="#c8b890" />
-        {/* Path texture — stone ovals */}
+        {/* ── Terrain variation patches ── */}
         <ellipse
-          cx="441"
-          cy="378"
-          fill="#bfac7e"
-          opacity="0.5"
-          rx="10"
-          ry="4"
+          cx="450"
+          cy="285"
+          fill="#ccd8a4"
+          opacity="0.65"
+          rx="210"
+          ry="175"
         />
         <ellipse
-          cx="438"
-          cy="352"
-          fill="#bfac7e"
+          cx="175"
+          cy="325"
+          fill="#c8d4a0"
           opacity="0.48"
-          rx="8"
-          ry="3"
+          rx="148"
+          ry="105"
         />
         <ellipse
-          cx="444"
-          cy="328"
-          fill="#bfac7e"
-          opacity="0.44"
-          rx="6"
-          ry="2.5"
+          cx="725"
+          cy="325"
+          fill="#c8d4a0"
+          opacity="0.48"
+          rx="140"
+          ry="100"
+        />
+        <ellipse
+          cx="168"
+          cy="188"
+          fill="#c4d09c"
+          opacity="0.4"
+          rx="162"
+          ry="108"
+        />
+        <ellipse
+          cx="732"
+          cy="188"
+          fill="#c4d09c"
+          opacity="0.4"
+          rx="152"
+          ry="104"
+        />
+        <ellipse
+          cx="450"
+          cy="82"
+          fill="#c4d09c"
+          opacity="0.34"
+          rx="138"
+          ry="78"
         />
 
-        {/* ── Well ── */}
-        {/* Shadow */}
-        <ellipse
-          cx="550"
-          cy="323"
-          fill="#c4b48a"
-          opacity="0.38"
-          rx="26"
-          ry="10"
+        {/* ── River ── */}
+        <path
+          d="M 0 152 C 180 144 380 162 450 155 C 520 148 720 166 900 158 L 900 180 C 720 188 520 172 450 179 C 380 186 180 170 0 178 Z"
+          fill="url(#vs-water)"
         />
-        {/* Stone base */}
-        <rect fill="#d4c4a2" height="26" rx="7" width="44" x="528" y="297" />
-        {/* Stone top ring */}
-        <rect fill="#c8b590" height="9" rx="7" width="44" x="528" y="297" />
-        {/* Roof */}
-        <path d="M 521 300 L 550 276 L 579 300 Z" fill="#8b7355" />
-        {/* Posts */}
-        <rect fill="#7a6248" height="20" rx="1.5" width="5" x="527" y="281" />
-        <rect fill="#7a6248" height="20" rx="1.5" width="5" x="562" y="281" />
-        {/* Rope */}
+        {/* River edge lines */}
+        <path
+          d="M 0 152 C 180 144 380 162 450 155 C 520 148 720 166 900 158"
+          fill="none"
+          opacity="0.4"
+          stroke="#7aa4a0"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M 0 178 C 180 186 380 170 450 179 C 520 188 720 172 900 180"
+          fill="none"
+          opacity="0.4"
+          stroke="#7aa4a0"
+          strokeWidth="1.5"
+        />
+
+        {/* ── Main north–south path ── */}
+        <path
+          d="M 450 500 L 450 178"
+          fill="none"
+          stroke="#d4c09c"
+          strokeLinecap="round"
+          strokeWidth="22"
+        />
+        {/* Path north of river (fades) */}
+        <path
+          d="M 450 152 L 450 24"
+          fill="none"
+          opacity="0.62"
+          stroke="#d4c09c"
+          strokeLinecap="round"
+          strokeWidth="18"
+        />
+
+        {/* ── Bridge ── */}
+        <rect fill="#c8b890" height="30" rx="2" width="32" x="434" y="148" />
+        {/* Planks */}
         <line
-          stroke="#8b7355"
+          stroke="#b8a878"
+          strokeWidth="1.5"
+          x1="434"
+          x2="466"
+          y1="157"
+          y2="157"
+        />
+        <line
+          stroke="#b8a878"
+          strokeWidth="1.5"
+          x1="434"
+          x2="466"
+          y1="164"
+          y2="164"
+        />
+        <line
+          stroke="#b8a878"
+          strokeWidth="1.5"
+          x1="434"
+          x2="466"
+          y1="171"
+          y2="171"
+        />
+        {/* Railings */}
+        <line
+          stroke="#a89878"
           strokeWidth="2"
-          x1="532"
-          x2="567"
-          y1="291"
-          y2="291"
+          x1="434"
+          x2="434"
+          y1="148"
+          y2="178"
+        />
+        <line
+          stroke="#a89878"
+          strokeWidth="2"
+          x1="466"
+          x2="466"
+          y1="148"
+          y2="178"
         />
 
-        {/* ── Cottage ── */}
-        {/* Walls */}
-        <rect fill="#ede2cc" height="84" rx="4" width="122" x="380" y="218" />
-        {/* Right-side wall shadow */}
+        {/* ── Branch paths (from hub outward) ── */}
+        {/* West */}
+        <path
+          d="M 450 285 C 385 265 285 248 68 192"
+          fill="none"
+          opacity="0.82"
+          stroke="#d4c09c"
+          strokeLinecap="round"
+          strokeWidth="18"
+        />
+        {/* East */}
+        <path
+          d="M 450 285 C 515 265 615 248 832 192"
+          fill="none"
+          opacity="0.82"
+          stroke="#d4c09c"
+          strokeLinecap="round"
+          strokeWidth="18"
+        />
+        {/* NW beyond bridge */}
+        <path
+          d="M 450 148 C 395 124 318 96 152 42"
+          fill="none"
+          opacity="0.52"
+          stroke="#d4c09c"
+          strokeLinecap="round"
+          strokeWidth="15"
+        />
+        {/* NE beyond bridge */}
+        <path
+          d="M 450 148 C 505 124 582 96 748 42"
+          fill="none"
+          opacity="0.52"
+          stroke="#d4c09c"
+          strokeLinecap="round"
+          strokeWidth="15"
+        />
+
+        {/* ── Locked zone: distant building silhouettes ── */}
+        {/* West */}
+        <path d="M 60 208 L 78 195 L 96 208 Z" fill="#b0986c" opacity="0.26" />
         <rect
-          fill="#d8cdb0"
-          height="84"
-          opacity="0.35"
-          rx="0"
-          width="18"
-          x="484"
+          fill="#bca888"
+          height="16"
+          opacity="0.26"
+          rx="2"
+          width="22"
+          x="63"
+          y="208"
+        />
+        <rect
+          fill="#bca888"
+          height="12"
+          opacity="0.2"
+          rx="2"
+          width="16"
+          x="40"
           y="218"
         />
-        {/* Left window */}
+        {/* East */}
+        <path
+          d="M 804 208 L 822 195 L 840 208 Z"
+          fill="#b0986c"
+          opacity="0.26"
+        />
         <rect
-          fill="#c8d4c0"
-          height="24"
-          opacity="0.88"
-          rx="3"
-          width="28"
-          x="390"
-          y="232"
+          fill="#bca888"
+          height="16"
+          opacity="0.26"
+          rx="2"
+          width="22"
+          x="815"
+          y="208"
         />
-        <line
-          stroke="#b0c4a8"
-          strokeWidth="1"
-          x1="404"
-          x2="404"
-          y1="232"
-          y2="256"
+        {/* North mountains */}
+        <path
+          d="M 355 52 L 400 18 L 445 52 Z"
+          fill="#c4b8a8"
+          opacity="0.22"
         />
-        <line
-          stroke="#b0c4a8"
-          strokeWidth="1"
-          x1="390"
-          x2="418"
-          y1="244"
-          y2="244"
+        <path
+          d="M 420 52 L 470 14 L 520 52 Z"
+          fill="#c4b8a8"
+          opacity="0.18"
         />
-        {/* Right window */}
-        <rect
-          fill="#c8d4c0"
-          height="24"
-          opacity="0.88"
-          rx="3"
-          width="28"
-          x="464"
-          y="232"
+        <path
+          d="M 490 52 L 530 24 L 570 52 Z"
+          fill="#c4b8a8"
+          opacity="0.15"
         />
-        <line
-          stroke="#b0c4a8"
-          strokeWidth="1"
-          x1="478"
-          x2="478"
-          y1="232"
-          y2="256"
-        />
-        <line
-          stroke="#b0c4a8"
-          strokeWidth="1"
-          x1="464"
-          x2="492"
-          y1="244"
-          y2="244"
-        />
-        {/* Door */}
-        <rect fill="#8b7355" height="44" rx="3" width="28" x="427" y="258" />
-        {/* Door handle */}
-        <circle cx="449" cy="281" fill="#c89b6d" r="2.5" />
-        {/* Roof */}
-        <path d="M 368 221 L 441 162 L 514 221 Z" fill="#7a6248" />
-        {/* Ridge */}
-        <line
-          stroke="#6b5540"
-          strokeWidth="1.5"
-          x1="441"
-          x2="441"
-          y1="162"
-          y2="172"
-        />
-        {/* Chimney */}
-        <rect fill="#8b7355" height="32" rx="2" width="18" x="470" y="174" />
-        {/* Chimney cap */}
-        <rect fill="#7a6248" height="6" rx="2" width="24" x="467" y="172" />
 
-        {/* ── Chimney smoke (animated via CSS) ── */}
+        {/* ── Gate / archway markers ── */}
+        {/* West gate */}
+        <line
+          stroke="#c0a880"
+          strokeWidth="2.5"
+          x1="96"
+          x2="96"
+          y1="200"
+          y2="212"
+        />
+        <line
+          stroke="#c0a880"
+          strokeWidth="2.5"
+          x1="112"
+          x2="112"
+          y1="200"
+          y2="212"
+        />
+        <path
+          d="M 93 200 Q 104 192 115 200"
+          fill="none"
+          stroke="#c0a880"
+          strokeWidth="2.5"
+        />
+        {/* East gate */}
+        <line
+          stroke="#c0a880"
+          strokeWidth="2.5"
+          x1="788"
+          x2="788"
+          y1="200"
+          y2="212"
+        />
+        <line
+          stroke="#c0a880"
+          strokeWidth="2.5"
+          x1="804"
+          x2="804"
+          y1="200"
+          y2="212"
+        />
+        <path
+          d="M 785 200 Q 796 192 807 200"
+          fill="none"
+          stroke="#c0a880"
+          strokeWidth="2.5"
+        />
+        {/* North gate (above bridge) */}
+        <line
+          stroke="#c0a880"
+          strokeWidth="2"
+          x1="442"
+          x2="442"
+          y1="35"
+          y2="45"
+        />
+        <line
+          stroke="#c0a880"
+          strokeWidth="2"
+          x1="458"
+          x2="458"
+          y1="35"
+          y2="45"
+        />
+        <path
+          d="M 439 35 Q 450 27 461 35"
+          fill="none"
+          stroke="#c0a880"
+          strokeWidth="2"
+        />
+
+        {/* ── Tree clusters (top-down canopy circles) ── */}
+
+        {/* Left main cluster */}
+        <circle cx="292" cy="318" fill="#8fa06c" r="30" />
+        <circle cx="270" cy="300" fill="#9aad78" r="24" />
+        <circle cx="316" cy="304" fill="#8fa06c" r="21" />
+        <circle cx="284" cy="342" fill="#749060" r="17" />
+        {/* Shadow depth */}
+        <circle cx="292" cy="326" fill="#749060" opacity="0.32" r="14" />
+        <circle cx="272" cy="308" fill="#749060" opacity="0.28" r="10" />
+
+        {/* Right main cluster */}
+        <circle cx="608" cy="318" fill="#8fa06c" r="28" />
+        <circle cx="630" cy="302" fill="#9aad78" r="22" />
+        <circle cx="585" cy="305" fill="#8fa06c" r="20" />
+        <circle cx="618" cy="342" fill="#749060" r="16" />
+        <circle cx="608" cy="326" fill="#749060" opacity="0.3" r="13" />
+
+        {/* North-west forest (in fog) */}
+        <circle cx="158" cy="195" fill="#8fa06c" opacity="0.58" r="30" />
+        <circle cx="134" cy="178" fill="#9aad78" opacity="0.52" r="24" />
+        <circle cx="182" cy="180" fill="#8fa06c" opacity="0.52" r="21" />
+        <circle cx="150" cy="218" fill="#749060" opacity="0.48" r="18" />
+        <circle cx="112" cy="205" fill="#8fa06c" opacity="0.44" r="16" />
+        <circle cx="172" cy="210" fill="#9aad78" opacity="0.44" r="13" />
+
+        {/* North-east forest (in fog) */}
+        <circle cx="742" cy="195" fill="#8fa06c" opacity="0.58" r="28" />
+        <circle cx="766" cy="178" fill="#9aad78" opacity="0.52" r="22" />
+        <circle cx="718" cy="182" fill="#8fa06c" opacity="0.52" r="20" />
+        <circle cx="754" cy="218" fill="#749060" opacity="0.48" r="17" />
+        <circle cx="790" cy="205" fill="#8fa06c" opacity="0.44" r="15" />
+
+        {/* Small trees flanking south path */}
+        <circle cx="392" cy="385" fill="#9aad78" r="13" />
+        <circle cx="380" cy="398" fill="#8fa06c" r="9" />
+        <circle cx="508" cy="385" fill="#9aad78" r="12" />
+        <circle cx="520" cy="399" fill="#8fa06c" r="9" />
+        <circle cx="388" cy="440" fill="#9aad78" r="10" />
+        <circle cx="512" cy="440" fill="#9aad78" r="11" />
+
+        {/* ── Central hub structures ── */}
+
+        {/* Cottage shadow */}
+        <rect
+          fill="#b8a080"
+          height="10"
+          opacity="0.28"
+          rx="3"
+          width="38"
+          x="437"
+          y="294"
+        />
+
+        {/* Cottage rooftop (top-down) */}
+        <rect fill="#c0aa88" height="34" rx="3" width="38" x="431" y="262" />
+        {/* Roof ridge (divides two slopes) */}
+        <line
+          stroke="#9c8860"
+          strokeLinecap="round"
+          strokeWidth="2.5"
+          x1="450"
+          x2="450"
+          y1="263"
+          y2="295"
+        />
+        {/* Eave shadow lines */}
+        <rect
+          fill="#a89070"
+          height="2"
+          opacity="0.35"
+          rx="1"
+          width="38"
+          x="431"
+          y="262"
+        />
+        <rect
+          fill="#a89070"
+          height="2"
+          opacity="0.25"
+          rx="1"
+          width="38"
+          x="431"
+          y="294"
+        />
+        {/* Chimney dot */}
+        <circle cx="462" cy="268" fill="#8b7355" r="4.5" />
+
+        {/* Chimney smoke (top-down: drifts northward / upward on map) */}
         <circle
           className="kc-smoke-1"
-          cx="479"
-          cy="165"
+          cx="463"
+          cy="260"
           fill="#d8cfc4"
-          r="5.5"
+          r="5"
         />
         <circle
           className="kc-smoke-2"
-          cx="482"
-          cy="157"
+          cx="466"
+          cy="251"
           fill="#d0c8bc"
-          r="4.5"
+          r="4"
         />
         <circle
           className="kc-smoke-3"
-          cx="478"
-          cy="149"
+          cx="463"
+          cy="243"
           fill="#cac1b4"
-          r="3.5"
+          r="3.2"
         />
 
-        {/* ── Lantern post (left of path) ── */}
-        {/* Base */}
-        <rect fill="#7a6248" height="5" rx="1.5" width="15" x="396" y="302" />
-        {/* Post */}
-        <rect fill="#7a6248" height="37" rx="2" width="5" x="401" y="267" />
-        {/* Lantern body */}
-        <rect fill="#c89b6d" height="26" rx="6" width="25" x="389" y="253" />
-        {/* Inner warm glow */}
-        <rect
-          fill="#f0c878"
-          height="18"
-          opacity="0.72"
-          rx="4"
-          width="17"
-          x="393"
-          y="257"
+        {/* Well shadow */}
+        <circle cx="508" cy="300" fill="#b8a078" opacity="0.22" r="15" />
+        {/* Well base */}
+        <circle cx="506" cy="298" fill="#d4c4a2" r="14" />
+        {/* Stone ring */}
+        <circle
+          cx="506"
+          cy="298"
+          fill="none"
+          r="10"
+          stroke="#b8a888"
+          strokeWidth="2.5"
         />
-        {/* Glow halo — animated */}
-        <ellipse
+        {/* Water */}
+        <circle cx="506" cy="298" fill="#8ab4b0" r="6" />
+        {/* Rope mechanism */}
+        <line
+          stroke="#8b7355"
+          strokeLinecap="round"
+          strokeWidth="1.5"
+          x1="498"
+          x2="514"
+          y1="298"
+          y2="298"
+        />
+
+        {/* ── Lanterns along path (top-down: glow halo + post dot) ── */}
+        {/* Near cottage */}
+        <circle
           className="kc-glow"
-          cx="401"
-          cy="266"
+          cx="422"
+          cy="314"
           fill="#f0c878"
-          opacity="0.3"
-          rx="26"
-          ry="21"
+          opacity="0.35"
+          r="19"
+        />
+        <circle cx="422" cy="314" fill="#c89b6d" r="4" />
+
+        {/* Mid path */}
+        <circle
+          className="kc-glow"
+          cx="421"
+          cy="368"
+          fill="#f0c878"
+          opacity="0.28"
+          r="15"
+        />
+        <circle cx="421" cy="368" fill="#c89b6d" r="3.5" />
+
+        {/* Lower path */}
+        <circle
+          className="kc-glow"
+          cx="420"
+          cy="425"
+          fill="#f0c878"
+          opacity="0.22"
+          r="12"
+        />
+        <circle cx="420" cy="425" fill="#c89b6d" r="3" />
+
+        {/* ── Central clearing glow (subtle bloom at hub) ── */}
+        <ellipse
+          cx="450"
+          cy="285"
+          fill="url(#vs-clearing)"
+          height="350"
+          rx="185"
+          ry="150"
         />
 
-        {/* ── Large oak tree (left) ── */}
-        {/* Root flare */}
-        <ellipse
-          cx="254"
-          cy="300"
-          fill="#8b7355"
-          opacity="0.4"
-          rx="14"
-          ry="5"
-        />
-        {/* Trunk */}
-        <rect fill="#8b7355" height="52" rx="4" width="12" x="248" y="252" />
-        {/* Foliage — layered blobs */}
-        <ellipse cx="240" cy="241" fill="#8fa06c" rx="28" ry="33" />
-        <ellipse cx="268" cy="237" fill="#8fa06c" rx="26" ry="31" />
-        <ellipse cx="254" cy="220" fill="#9aad78" rx="40" ry="46" />
-        <ellipse cx="236" cy="252" fill="#9aad78" opacity="0.65" rx="22" ry="26" />
-        {/* Highlight */}
-        <ellipse
-          cx="248"
-          cy="208"
-          fill="#a8bc84"
-          opacity="0.45"
-          rx="22"
-          ry="20"
-        />
-
-        {/* ── Smaller tree (right) ── */}
-        <rect fill="#8b7355" height="40" rx="3" width="8" x="644" y="264" />
-        <ellipse cx="648" cy="248" fill="#8fa06c" rx="26" ry="32" />
-        <ellipse
-          cx="658"
-          cy="258"
-          fill="#96a872"
-          opacity="0.65"
-          rx="18"
-          ry="22"
-        />
-        <ellipse
-          cx="640"
-          cy="242"
-          fill="#9aad78"
-          opacity="0.5"
-          rx="18"
-          ry="22"
-        />
-
-        {/* ── Birds (subtle V shapes in sky) ── */}
-        <path
-          d="M 198 82 Q 204 76 210 82"
-          fill="none"
-          stroke="#a09080"
-          strokeLinecap="round"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M 215 76 Q 222 70 229 76"
-          fill="none"
-          stroke="#a09080"
-          strokeLinecap="round"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M 668 98 Q 675 92 682 98"
-          fill="none"
-          stroke="#a09080"
-          strokeLinecap="round"
-          strokeWidth="1.5"
-        />
-
-        {/* ── Edge vignettes ── */}
-        <rect fill="url(#vs-fade-left)" height="420" width="130" x="0" y="0" />
-        <rect
-          fill="url(#vs-fade-right)"
-          height="420"
-          width="130"
-          x="770"
-          y="0"
-        />
-        <rect
-          fill="url(#vs-fade-bottom)"
-          height="110"
-          width="900"
-          x="0"
-          y="310"
-        />
-        <rect fill="url(#vs-fade-top)" height="60" width="900" x="0" y="0" />
+        {/* ── Fog of war overlay ── */}
+        <rect fill="url(#vs-fog)" height="500" width="900" x="0" y="0" />
       </svg>
     </figure>
   )

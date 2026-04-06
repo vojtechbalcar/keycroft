@@ -4,53 +4,60 @@ import { VillageScene } from '@/components/village/village-scene'
 
 export default function AppHomePage() {
   return (
-    <div className="space-y-6">
-      {/* Village canvas with CTA overlay */}
-      <section className="relative overflow-hidden rounded-[32px] border border-[var(--kc-line)] shadow-[0_18px_50px_rgba(58,45,30,0.12)]">
-        <div className="aspect-[16/7] w-full bg-[linear-gradient(180deg,#f9f3e6_0%,#f1e7d2_100%)]">
-          <VillageScene />
-        </div>
-
-        {/* Gradient overlay + CTA */}
-        <div className="absolute bottom-0 left-0 right-0 bg-[linear-gradient(to_top,rgba(245,239,223,0.97)_0%,rgba(245,239,223,0.82)_55%,transparent_100%)] px-8 pb-8 pt-20">
-          <p className="text-xs uppercase tracking-[0.18em] text-[var(--kc-muted)]">
-            Your next step
-          </p>
-          <h2 className="mt-1 text-2xl tracking-tight text-[var(--kc-text)]">
-            Chapter 1 · Arrival
-          </h2>
-          <p className="mt-1 max-w-xs text-sm leading-6 text-[var(--kc-muted)]">
-            Begin with a short placement session to find your level.
-          </p>
-          <Link
-            href="/play"
-            className="mt-4 inline-flex items-center justify-center rounded-full bg-[var(--kc-accent)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[var(--kc-accent-strong)]"
-          >
-            Begin the journey
-          </Link>
-        </div>
-      </section>
-
-      {/* Mini stats row */}
-      <div className="grid grid-cols-3 gap-4">
-        {(
-          [
-            { label: 'Current WPM', value: '—' },
-            { label: 'Accuracy', value: '—' },
-            { label: 'Sessions', value: '0' },
-          ] as const
-        ).map(({ label, value }) => (
-          <div
-            key={label}
-            className="rounded-[20px] border border-[var(--kc-line)] bg-[var(--kc-surface)] p-5 shadow-[0_8px_24px_rgba(58,45,30,0.06)]"
-          >
-            <p className="text-xs uppercase tracking-[0.18em] text-[var(--kc-muted)]">
-              {label}
-            </p>
-            <p className="mt-2 text-2xl text-[var(--kc-text)]">{value}</p>
-          </div>
-        ))}
+    <>
+      {/* Full-viewport map — escapes AppShell grid */}
+      <div className="fixed inset-0 z-0 bg-[#ede3cc]">
+        <VillageScene />
       </div>
-    </div>
+
+      {/* HUD layer */}
+      <div className="fixed inset-0 z-10 pointer-events-none">
+        {/* Top-left: logo / world name */}
+        <div className="absolute left-6 top-6 pointer-events-auto">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-[rgba(58,45,30,0.52)]">
+            Keycroft
+          </p>
+          <h1 className="text-xl font-medium tracking-tight text-[rgba(58,45,30,0.88)]">
+            The Village
+          </h1>
+        </div>
+
+        {/* Top-right: minimal stats pill */}
+        <div className="absolute right-6 top-6 flex items-center gap-3 pointer-events-auto">
+          <div className="flex items-center gap-4 rounded-full border border-[rgba(58,45,30,0.14)] bg-[rgba(245,239,223,0.72)] px-4 py-2 backdrop-blur-sm">
+            <span className="text-[11px] uppercase tracking-[0.16em] text-[rgba(58,45,30,0.44)]">
+              WPM
+            </span>
+            <span className="text-sm text-[rgba(58,45,30,0.82)]">—</span>
+            <span className="h-3 w-px bg-[rgba(58,45,30,0.16)]" />
+            <span className="text-[11px] uppercase tracking-[0.16em] text-[rgba(58,45,30,0.44)]">
+              Sessions
+            </span>
+            <span className="text-sm text-[rgba(58,45,30,0.82)]">0</span>
+          </div>
+        </div>
+
+        {/* Bottom-center: chapter CTA panel */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-auto">
+          <div className="flex flex-col items-center gap-4 rounded-[28px] border border-[rgba(58,45,30,0.12)] bg-[rgba(245,239,223,0.82)] px-10 py-7 text-center shadow-[0_24px_64px_rgba(58,45,30,0.18)] backdrop-blur-md">
+            <p className="text-[11px] uppercase tracking-[0.2em] text-[rgba(58,45,30,0.48)]">
+              Your next step
+            </p>
+            <h2 className="text-2xl tracking-tight text-[rgba(58,45,30,0.9)]">
+              Chapter 1 · Arrival
+            </h2>
+            <p className="max-w-[240px] text-sm leading-6 text-[rgba(58,45,30,0.56)]">
+              A short placement session to find your level.
+            </p>
+            <Link
+              href="/play"
+              className="mt-1 inline-flex items-center justify-center rounded-full bg-[var(--kc-accent)] px-6 py-3 text-sm font-medium text-white shadow-[0_4px_16px_rgba(94,116,72,0.35)] transition hover:bg-[var(--kc-accent-strong)]"
+            >
+              Begin the journey
+            </Link>
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
