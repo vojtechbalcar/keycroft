@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  Fragment,
   useEffect,
   useRef,
   useState,
@@ -24,6 +25,19 @@ type TypingSurfaceProps = {
   onComplete: (session: TypingSessionState) => void
 }
 
+function getCharacterClassName(status: string, isCursorPosition: boolean): string {
+  if (status === 'correct') {
+    return 'text-[var(--kc-accent-strong)]'
+  }
+  if (status === 'incorrect') {
+    return 'rounded-sm bg-[rgba(200,155,109,0.22)] text-[var(--kc-warm)]'
+  }
+  if (isCursorPosition) {
+    return 'rounded-sm bg-[rgba(122,143,98,0.12)] text-[var(--kc-text)]'
+  }
+  return 'text-[var(--kc-text)] opacity-55'
+}
+
 export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
   const [session, setSession] = useState(() => createTypingSession(prompt.text))
   const [now, setNow] = useState(0)
@@ -44,6 +58,7 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
   }, [session.startedAt, session.isComplete])
 
   const characterStatuses = getCharacterStatuses(session)
+  const cursorIndex = session.inputValue.length
   const elapsedMs =
     session.startedAt === null
       ? 0
@@ -106,24 +121,26 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
         </p>
 
         <div
-          className="mt-6 flex flex-wrap gap-x-0.5 gap-y-3 text-3xl leading-relaxed text-[var(--kc-text)]"
+          className="mt-6 flex flex-wrap items-end gap-x-0.5 gap-y-3 text-3xl leading-relaxed text-[var(--kc-text)]"
           data-testid="typing-line"
         >
           {characterStatuses.map((character, index) => (
-            <span
-              className={
-                character.status === 'correct'
-                  ? 'text-[var(--kc-accent-strong)]'
-                  : character.status === 'incorrect'
-                    ? 'rounded bg-[rgba(200,155,109,0.22)] text-[var(--kc-warm)]'
-                    : 'text-[var(--kc-text)] opacity-55'
-              }
-              data-status={character.status}
-              key={`${character.expected}-${index}`}
-            >
-              {character.expected === ' ' ? '\u00A0' : character.expected}
-            </span>
+            <Fragment key={`char-${index}`}>
+              {!session.isComplete && index === cursorIndex && (
+                <span aria-hidden className="kc-cursor" />
+              )}
+              <span
+                className={getCharacterClassName(character.status, index === cursorIndex)}
+                data-status={character.status}
+              >
+                {character.expected === ' ' ? '\u00A0' : character.expected}
+              </span>
+            </Fragment>
           ))}
+          {/* Trailing cursor if all characters typed but session not yet marked complete */}
+          {!session.isComplete && cursorIndex >= characterStatuses.length && (
+            <span aria-hidden className="kc-cursor" />
+          )}
         </div>
 
         <p className="mt-6 text-sm leading-6 text-[var(--kc-muted)]">

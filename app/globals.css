@@ -42,3 +42,53 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+@keyframes kc-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.kc-cursor {
+  display: block;
+  width: 2px;
+  height: 1.1em;
+  background: var(--kc-text);
+  align-self: flex-end;
+  margin-bottom: 0.08em;
+  margin-right: 1px;
+  border-radius: 1px;
+  flex-shrink: 0;
+  animation: kc-blink 0.85s ease-in-out infinite;
+}
+
+@keyframes kc-smoke {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(-20px) translateX(3px) scale(1.8);
+    opacity: 0;
+  }
+}
+
+.kc-smoke-1 { animation: kc-smoke 2.8s ease-in-out infinite; }
+.kc-smoke-2 { animation: kc-smoke 2.8s ease-in-out 0.93s infinite; }
+.kc-smoke-3 { animation: kc-smoke 2.8s ease-in-out 1.86s infinite; }
+
+@keyframes kc-glow-pulse {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.45; }
+}
+
+.kc-glow { animation: kc-glow-pulse 3.2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kc-cursor,
+  .kc-smoke-1,
+  .kc-smoke-2,
+  .kc-smoke-3,
+  .kc-glow {
+    animation: none;
+  }
+}

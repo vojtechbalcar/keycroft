@@ -1,5 +1,15 @@
 import { expect, test } from 'playwright/test'
 
+test('typing starts immediately on page load without a warm-up click', async ({
+  page,
+}) => {
+  await page.goto('/play')
+
+  await page.keyboard.type('c')
+
+  await expect(page.locator('[data-status="correct"]').first()).toHaveText('c')
+})
+
 test('user can finish a short typing session', async ({ page }) => {
   await page.goto('/play')
 

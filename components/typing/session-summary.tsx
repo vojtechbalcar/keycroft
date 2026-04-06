@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import type { SessionMetrics } from '@/lib/typing/session-metrics'
 import type { PracticeText } from '@/lib/typing/practice-texts'
 
@@ -30,18 +32,27 @@ export function SessionSummary({
 }: SessionSummaryProps) {
   return (
     <section className="space-y-6 rounded-[36px] border border-[var(--kc-line)] bg-[linear-gradient(180deg,rgba(255,250,240,0.98)_0%,rgba(245,236,218,0.98)_100%)] p-8 shadow-[0_18px_50px_rgba(58,45,30,0.10)] md:p-10">
-      <div className="space-y-2">
+      <div className="space-y-3">
         <p className="text-sm uppercase tracking-[0.18em] text-[var(--kc-muted)]">
           {prompt.label}
         </p>
         <h1 className="text-4xl tracking-tight text-[var(--kc-text)]">
           Session complete
         </h1>
-        <p className="max-w-2xl text-base leading-7 text-[var(--kc-muted)]">
-          {metrics.cleanRun
-            ? 'Clean run. The line stayed steady from start to finish.'
-            : 'Solid finish. The next gain comes from reducing mid-line corrections.'}
-        </p>
+        {metrics.cleanRun && (
+          <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(94,116,72,0.12)] px-4 py-1.5">
+            <span className="h-2 w-2 rounded-full bg-[var(--kc-accent)]" />
+            <span className="text-sm text-[var(--kc-accent-strong)]">
+              Clean run — no corrections
+            </span>
+          </div>
+        )}
+        {!metrics.cleanRun && (
+          <p className="max-w-2xl text-base leading-7 text-[var(--kc-muted)]">
+            Solid finish. The next gain comes from reducing mid-line
+            corrections.
+          </p>
+        )}
       </div>
 
       <dl className="grid gap-4 md:grid-cols-4">
@@ -81,18 +92,32 @@ export function SessionSummary({
         <p className="text-sm uppercase tracking-[0.18em] text-[var(--kc-muted)]">
           Focus next
         </p>
-        <p className="mt-2 text-base leading-7 text-[var(--kc-text)]">
+        <p className="mt-2 text-lg leading-8 text-[var(--kc-text)]">
           {getFocusMessage(metrics)}
         </p>
       </div>
 
-      <button
-        className="inline-flex items-center justify-center rounded-full bg-[var(--kc-accent)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[var(--kc-accent-strong)]"
-        onClick={onTryAnother}
-        type="button"
-      >
-        Try another line
-      </button>
+      <div className="rounded-[24px] border border-[rgba(122,143,98,0.2)] bg-[rgba(122,143,98,0.06)] px-5 py-4">
+        <p className="text-sm text-[var(--kc-accent-strong)]">
+          A lantern in your village burns a little brighter.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-5">
+        <button
+          className="inline-flex items-center justify-center rounded-full bg-[var(--kc-accent)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[var(--kc-accent-strong)]"
+          onClick={onTryAnother}
+          type="button"
+        >
+          Try another line
+        </button>
+        <Link
+          className="text-sm text-[var(--kc-muted)] underline-offset-4 transition hover:text-[var(--kc-text)] hover:underline"
+          href="/home"
+        >
+          Back to your village →
+        </Link>
+      </div>
     </section>
   )
 }

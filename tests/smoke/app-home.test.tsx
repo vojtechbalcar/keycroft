@@ -5,12 +5,12 @@ import { describe, expect, it } from 'vitest'
 import AppHomePage from '@/app/(app)/home/page'
 
 describe('AppHomePage', () => {
-  it('renders the stage one placeholder', () => {
+  it('renders the village hub with chapter CTA', () => {
     render(<AppHomePage />)
 
     expect(
       screen.getByRole('heading', {
-        name: /keycroft home/i,
+        name: /chapter 1/i,
       }),
     ).toBeInTheDocument()
   })
