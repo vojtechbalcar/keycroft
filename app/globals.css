@@ -1,13 +1,34 @@
 @import 'tailwindcss';
 
 :root {
-  --kc-background: #12100a;
-  --kc-surface: #1c1710;
-  --kc-text: #f0e6d0;
-  --kc-muted: #9a8870;
-  --kc-line: #2c2215;
-  --kc-accent: #96ba5e;
-  --kc-accent-strong: #72953e;
+  /* Sidebar / chrome */
+  --kc-sidebar: #1b3321;
+  --kc-sidebar-hover: #243f2c;
+  --kc-sidebar-active: #2e5438;
+  --kc-sidebar-border: #274030;
+
+  /* Page background */
+  --kc-background: #111d14;
+
+  /* Content cards (light cream surface) */
+  --kc-surface: #f4efe4;
+  --kc-surface-2: #ece6d8;
+
+  /* Text */
+  --kc-text: #ffffff;
+  --kc-text-dark: #1c2e1e;
+  --kc-muted: #7aaa82;
+  --kc-muted-dark: #5a7a5e;
+
+  /* Borders */
+  --kc-line: #2e4a34;
+  --kc-line-light: #d8cfbc;
+
+  /* Accent */
+  --kc-accent: #4a8c3a;
+  --kc-accent-strong: #3a7230;
+
+  /* Warm / gold */
   --kc-warm: #d4a850;
   --kc-gold: #f5c842;
 }
@@ -51,7 +72,7 @@ a {
   display: block;
   width: 2px;
   height: 1.1em;
-  background: var(--kc-text);
+  background: var(--kc-text-dark);
   align-self: flex-end;
   margin-bottom: 0.08em;
   margin-right: 1px;
