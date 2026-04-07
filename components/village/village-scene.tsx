@@ -13,12 +13,13 @@ export function VillageScene() {
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          {/* Fog of war — transparent at hub, heavy at edges */}
+          {/* Fog of war — transparent at hub, fades to near-black at edges */}
           <radialGradient cx="50%" cy="57%" id="vs-fog" r="50%">
-            <stop offset="0%" stopColor="#ede3cc" stopOpacity="0" />
-            <stop offset="50%" stopColor="#ede3cc" stopOpacity="0" />
-            <stop offset="72%" stopColor="#ede3cc" stopOpacity="0.38" />
-            <stop offset="100%" stopColor="#ede3cc" stopOpacity="0.90" />
+            <stop offset="0%" stopColor="#0a0703" stopOpacity="0" />
+            <stop offset="48%" stopColor="#0a0703" stopOpacity="0" />
+            <stop offset="68%" stopColor="#0a0703" stopOpacity="0.55" />
+            <stop offset="85%" stopColor="#0a0703" stopOpacity="0.82" />
+            <stop offset="100%" stopColor="#0a0703" stopOpacity="0.97" />
           </radialGradient>
 
           {/* River water */}

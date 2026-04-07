@@ -1,14 +1,15 @@
 @import 'tailwindcss';
 
 :root {
-  --kc-background: #f5efdf;
-  --kc-surface: #fffaf0;
-  --kc-text: #2a241d;
-  --kc-muted: #6d6254;
-  --kc-line: #dbcdb7;
-  --kc-accent: #7a8f62;
-  --kc-accent-strong: #5e7448;
-  --kc-warm: #c89b6d;
+  --kc-background: #12100a;
+  --kc-surface: #1c1710;
+  --kc-text: #f0e6d0;
+  --kc-muted: #9a8870;
+  --kc-line: #2c2215;
+  --kc-accent: #96ba5e;
+  --kc-accent-strong: #72953e;
+  --kc-warm: #d4a850;
+  --kc-gold: #f5c842;
 }
 
 * {
@@ -23,9 +24,7 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.75), transparent 40%),
-    linear-gradient(180deg, #f9f3e6 0%, #f1e7d2 100%);
+  background: var(--kc-background);
   font-family:
     'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia,
     serif;
