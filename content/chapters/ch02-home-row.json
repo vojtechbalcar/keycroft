@@ -1,0 +1,45 @@
+{
+  "id": "ch02-home-row",
+  "order": 2,
+  "title": "Home Row Stability",
+  "phaseId": "lantern",
+  "summary": "Turn early comfort into reliable home-row control that holds up over several lines.",
+  "skillTheme": "repeatable home-row accuracy under light pressure",
+  "lessons": [
+    {
+      "id": "ch02-home-row-l01",
+      "label": "Benchwork",
+      "focus": "repeatable finger returns",
+      "goal": "Return to the resting keys after every letter.",
+      "text": "asdf jkl; keeps the workshop ready"
+    },
+    {
+      "id": "ch02-home-row-l02",
+      "label": "Quiet Nails",
+      "focus": "reducing corrections",
+      "goal": "Trim down the urge to correct mid-line.",
+      "text": "steady hands leave fewer marks behind"
+    },
+    {
+      "id": "ch02-home-row-l03",
+      "label": "Square Sweep",
+      "focus": "clean rhythm through longer phrases",
+      "goal": "Carry the same pace from start to finish.",
+      "text": "the home square grows brighter with every clean pass"
+    }
+  ],
+  "capstone": {
+    "id": "ch02-home-row-capstone",
+    "label": "Square Muster",
+    "focus": "accuracy over speed",
+    "goal": "Hold your form through a full home-row sentence.",
+    "text": "steady home row work gives the square a warm dependable glow"
+  },
+  "unlocks": [
+    {
+      "type": "chapter-path",
+      "target": "ch03-reach-control",
+      "description": "A new route opens beyond the square toward the workshop paths."
+    }
+  ]
+}

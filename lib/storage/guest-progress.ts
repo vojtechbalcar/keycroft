@@ -14,6 +14,7 @@ export type GuestProgress = {
   placement: PlacementResult | null
   events: ProgressEvent[]
   recentSessions: StoredSessionSummary[]
+  completedChapterIds: string[]
 }
 
 export const guestProgressStorageKey = 'keycroft.guest.progress'
@@ -24,13 +25,19 @@ export function createEmptyGuestProgress(): GuestProgress {
     placement: null,
     events: [],
     recentSessions: [],
+    completedChapterIds: [],
   }
 }
 
 export function readGuestProgress(storage: StorageLike): GuestProgress {
   const raw = storage.getItem(guestProgressStorageKey)
   if (!raw) return createEmptyGuestProgress()
-  return JSON.parse(raw) as GuestProgress
+  const parsed = JSON.parse(raw) as Partial<GuestProgress>
+  return {
+    ...createEmptyGuestProgress(),
+    ...parsed,
+    completedChapterIds: parsed.completedChapterIds ?? [],
+  }
 }
 
 export function saveGuestProgress(storage: StorageLike, progress: GuestProgress): void {
@@ -47,6 +54,7 @@ export function recordPlacementResult(
     placement,
     events: [...progress.events, createPlacementCompletedEvent(placement, createdAt)],
     recentSessions: progress.recentSessions,
+    completedChapterIds: progress.completedChapterIds,
   }
 }
 
@@ -64,5 +72,19 @@ export function recordPracticeSession(
     currentPhaseId: evaluateCurrentPhase(nextEvents),
     events: nextEvents,
     recentSessions: [session, ...progress.recentSessions].slice(0, 5),
+  }
+}
+
+export function recordCompletedChapter(
+  progress: GuestProgress,
+  chapterId: string,
+): GuestProgress {
+  if (progress.completedChapterIds.includes(chapterId)) {
+    return progress
+  }
+
+  return {
+    ...progress,
+    completedChapterIds: [...progress.completedChapterIds, chapterId],
   }
 }

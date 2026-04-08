@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from 'playwright/test'
 
 test.describe('Home Hub', () => {
   test('redirects to /onboarding when no placement exists', async ({ page }) => {

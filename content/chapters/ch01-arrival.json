@@ -1,0 +1,45 @@
+{
+  "id": "ch01-arrival",
+  "order": 1,
+  "title": "Arrival",
+  "phaseId": "lantern",
+  "summary": "Meet the village with short, calm lines that build trust in the keyboard.",
+  "skillTheme": "settling your hands and learning the home row calmly",
+  "lessons": [
+    {
+      "id": "ch01-arrival-l01",
+      "label": "Lantern Line",
+      "focus": "steady home-row rhythm",
+      "goal": "Relax into the keyboard without chasing speed.",
+      "text": "calm hands build quiet speed"
+    },
+    {
+      "id": "ch01-arrival-l02",
+      "label": "Soft Steps",
+      "focus": "light space control",
+      "goal": "Keep the line moving without jabbing at the keys.",
+      "text": "soft steps keep the lanterns bright"
+    },
+    {
+      "id": "ch01-arrival-l03",
+      "label": "Open Gate",
+      "focus": "punctuation touch",
+      "goal": "Finish cleanly when punctuation appears in the line.",
+      "text": "clear words, steady hands, open doors."
+    }
+  ],
+  "capstone": {
+    "id": "ch01-arrival-capstone",
+    "label": "Arrival Check",
+    "focus": "calm consistency",
+    "goal": "Prove you can stay relaxed through a slightly longer sentence.",
+    "text": "quiet rhythm wakes the village one clean line at a time"
+  },
+  "unlocks": [
+    {
+      "type": "region-detail",
+      "target": "lantern-quarter",
+      "description": "The first lantern path brightens around the village square."
+    }
+  ]
+}

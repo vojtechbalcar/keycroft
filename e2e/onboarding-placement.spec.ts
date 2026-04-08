@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page } from 'playwright/test'
 
 const placementLine = 'steady hands shape patient rhythm'
 const practiceLine = 'calm hands build quiet speed'

@@ -4,6 +4,7 @@ import { assessPlacement } from '@/lib/placement/assess'
 import {
   createEmptyGuestProgress,
   readGuestProgress,
+  recordCompletedChapter,
   recordPlacementResult,
   recordPracticeSession,
   saveGuestProgress,
@@ -60,6 +61,23 @@ describe('guest storage', () => {
     expect(readGuestProgress(storage)).toEqual(
       expect.objectContaining({ currentPhaseId: 'lantern', placement }),
     )
+  })
+
+  it('tracks completed chapters once and preserves them in storage', () => {
+    const storage = createMemoryStorage()
+    let progress = createEmptyGuestProgress()
+
+    progress = recordCompletedChapter(progress, 'ch01-arrival')
+    progress = recordCompletedChapter(progress, 'ch01-arrival')
+    progress = recordCompletedChapter(progress, 'ch02-home-row')
+
+    saveGuestProgress(storage, progress)
+    const stored = readGuestProgress(storage)
+
+    expect(stored.completedChapterIds).toEqual([
+      'ch01-arrival',
+      'ch02-home-row',
+    ])
   })
 
   it('keeps the five most recent practice sessions in newest-first order', () => {

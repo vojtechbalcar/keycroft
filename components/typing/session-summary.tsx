@@ -7,6 +7,9 @@ type SessionSummaryProps = {
   prompt: PracticeText
   metrics: SessionMetrics
   onTryAnother: () => void
+  primaryActionLabel?: string
+  secondaryHref?: string
+  secondaryLabel?: string
 }
 
 function formatSeconds(elapsedMs: number): string {
@@ -29,6 +32,9 @@ export function SessionSummary({
   prompt,
   metrics,
   onTryAnother,
+  primaryActionLabel = 'Try another line',
+  secondaryHref = '/home',
+  secondaryLabel = 'Back to your village →',
 }: SessionSummaryProps) {
   return (
     <section
@@ -163,14 +169,14 @@ export function SessionSummary({
           onClick={onTryAnother}
           type="button"
         >
-          Try another line
+          {primaryActionLabel}
         </button>
         <Link
           className="text-sm underline-offset-4 transition-colors hover:underline"
           style={{ color: 'var(--kc-on-surface-muted)' }}
-          href="/home"
+          href={secondaryHref}
         >
-          Back to your village →
+          {secondaryLabel}
         </Link>
       </div>
     </section>

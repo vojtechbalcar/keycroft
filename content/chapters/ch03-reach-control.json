@@ -1,0 +1,45 @@
+{
+  "id": "ch03-reach-control",
+  "order": 3,
+  "title": "Reach Control",
+  "phaseId": "workshop",
+  "summary": "Extend beyond the home row without losing balance, posture, or accuracy.",
+  "skillTheme": "controlled reaches to nearby keys and smooth returns",
+  "lessons": [
+    {
+      "id": "ch03-reach-control-l01",
+      "label": "Bridge Reach",
+      "focus": "top-row touches",
+      "goal": "Reach upward and come back without drifting.",
+      "text": "reaching up is easier when the home row still anchors you"
+    },
+    {
+      "id": "ch03-reach-control-l02",
+      "label": "Lower Path",
+      "focus": "bottom-row recovery",
+      "goal": "Keep the wrists calm while moving downward.",
+      "text": "measured reaches keep the market road smooth and open"
+    },
+    {
+      "id": "ch03-reach-control-l03",
+      "label": "Workshop Flow",
+      "focus": "mixed-row transitions",
+      "goal": "String several reaches together without panic corrections.",
+      "text": "calm return strokes make every workshop task feel lighter"
+    }
+  ],
+  "capstone": {
+    "id": "ch03-reach-control-capstone",
+    "label": "Workshop Check",
+    "focus": "multi-row control",
+    "goal": "Handle a longer mixed-row sentence without losing your rhythm.",
+    "text": "balanced reaches let the workshop lanes hum with confident motion"
+  },
+  "unlocks": [
+    {
+      "type": "region-detail",
+      "target": "market-row",
+      "description": "The workshop roads open into a busier market lane."
+    }
+  ]
+}
