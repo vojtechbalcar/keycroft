@@ -9,7 +9,6 @@ import {
   type ClipboardEvent,
 } from 'react'
 
-import { SessionHeader } from '@/components/typing/session-header'
 import { normalizeTypingKey } from '@/lib/typing/key-events'
 import type { PracticeText } from '@/lib/typing/practice-texts'
 import {
@@ -25,17 +24,20 @@ type TypingSurfaceProps = {
   onComplete: (session: TypingSessionState) => void
 }
 
-function getCharacterClassName(status: string, isCursorPosition: boolean): string {
+function getCharacterClassName(
+  status: string,
+  isCursorPosition: boolean,
+): string {
   if (status === 'correct') {
-    return 'text-[var(--kc-accent-strong)]'
+    return 'text-[#1c2e1e]'
   }
   if (status === 'incorrect') {
-    return 'rounded-sm bg-[rgba(200,155,109,0.22)] text-[var(--kc-warm)]'
+    return 'rounded-sm bg-[rgba(200,155,109,0.25)] text-[#c0392b]'
   }
   if (isCursorPosition) {
-    return 'rounded-sm bg-[rgba(122,143,98,0.12)] text-[var(--kc-text)]'
+    return 'rounded-sm bg-[rgba(122,143,98,0.12)] text-[#1c2e1e]'
   }
-  return 'text-[var(--kc-text)] opacity-55'
+  return 'text-[#a09882]'
 }
 
 export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
@@ -59,12 +61,14 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
 
   const characterStatuses = getCharacterStatuses(session)
   const cursorIndex = session.inputValue.length
-  const elapsedMs =
-    session.startedAt === null
-      ? 0
-      : session.isComplete && session.completedAt !== null
-        ? session.completedAt - session.startedAt
-        : now - session.startedAt
+  const progressPercent = Math.round(
+    (session.inputValue.length / prompt.text.length) * 100,
+  )
+  const currentErrors = getCurrentErrorCount(session)
+
+  void now
+  void progressPercent
+  void currentErrors
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     const action = normalizeTypingKey(event)
@@ -89,7 +93,7 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
 
   return (
     <section
-      className="space-y-6"
+      className="flex flex-col"
       onClick={() => {
         inputRef.current?.focus()
       }}
@@ -106,22 +110,52 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
         value=""
       />
 
-      <SessionHeader
-        currentErrors={getCurrentErrorCount(session)}
-        elapsedMs={elapsedMs}
-        promptFocus={prompt.focus}
-        promptLabel={prompt.label}
-        totalCharacters={prompt.text.length}
-        typedCharacters={session.inputValue.length}
-      />
+      {/* Breadcrumb header */}
+      <div
+        className="flex items-center justify-between px-6 py-3"
+        style={{
+          background: '#faf7f0',
+          borderBottom: '1px solid #d8cfbc',
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <span
+            className="text-[10px] uppercase tracking-[0.2em]"
+            style={{ color: '#8a7a5a' }}
+          >
+            {prompt.label}
+          </span>
+          <span style={{ color: '#c8b890' }}>›</span>
+          <span
+            className="text-[10px] uppercase tracking-[0.2em]"
+            style={{ color: '#5a6a5e' }}
+          >
+            Western Path
+          </span>
+        </div>
+        <span
+          className="rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+          style={{
+            background: '#e8f0e4',
+            color: '#4a8c3a',
+            border: '1px solid #c8d8c0',
+          }}
+        >
+          Focus
+        </span>
+      </div>
 
-      <section className="rounded-[36px] border border-[var(--kc-line)] bg-[linear-gradient(180deg,rgba(255,250,240,0.96)_0%,rgba(248,240,224,0.96)_100%)] p-8 shadow-[0_18px_50px_rgba(58,45,30,0.10)] md:p-10">
-        <p className="text-sm uppercase tracking-[0.18em] text-[var(--kc-muted)]">
-          Type the line exactly as shown
-        </p>
-
+      {/* Typing area */}
+      <div
+        className="flex-1 px-8 py-8"
+        style={{ background: '#fff', minHeight: 200 }}
+      >
         <div
-          className="mt-6 flex flex-wrap items-end gap-x-0.5 gap-y-3 text-3xl leading-relaxed text-[var(--kc-text)]"
+          className="flex flex-wrap items-end gap-x-0.5 gap-y-4 text-[1.65rem] leading-[1.7]"
+          style={{
+            fontFamily:
+              "'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif",
+          }}
           data-testid="typing-line"
         >
           {characterStatuses.map((character, index) => (
@@ -130,24 +164,21 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
                 <span aria-hidden className="kc-cursor" />
               )}
               <span
-                className={getCharacterClassName(character.status, index === cursorIndex)}
+                className={getCharacterClassName(
+                  character.status,
+                  index === cursorIndex,
+                )}
                 data-status={character.status}
               >
                 {character.expected === ' ' ? '\u00A0' : character.expected}
               </span>
             </Fragment>
           ))}
-          {/* Trailing cursor if all characters typed but session not yet marked complete */}
           {!session.isComplete && cursorIndex >= characterStatuses.length && (
             <span aria-hidden className="kc-cursor" />
           )}
         </div>
-
-        <p className="mt-6 text-sm leading-6 text-[var(--kc-muted)]">
-          Backspace is allowed. Progress only counts when the full line is
-          correct.
-        </p>
-      </section>
+      </div>
     </section>
   )
 }

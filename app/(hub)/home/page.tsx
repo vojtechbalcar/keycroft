@@ -1,164 +1,254 @@
 import Link from 'next/link'
 
-import { VillageScene } from '@/components/village/village-scene'
+import { AppShell } from '@/components/layout/app-shell'
 
-const tools = [
-  {
-    icon: '⌨',
-    title: 'Typing Sessions',
-    desc: 'Each line you complete builds your village and sharpens your skill.',
-  },
-  {
-    icon: '⌂',
-    title: 'Your Village',
-    desc: 'Watch new structures appear as your words-per-minute grows.',
-  },
-  {
-    icon: '◈',
-    title: 'Milestones',
-    desc: 'Unlock new zones, buildings, and lore as you level up.',
-  },
-  {
-    icon: '↑',
-    title: 'Progress',
-    desc: 'Track WPM, accuracy, and streaks across every session.',
-  },
+const buildings = [
+  { name: 'Windmill', x: '52%', y: '28%', icon: '☘' },
+  { name: 'Cottage Lvl 4', x: '38%', y: '42%', icon: '🏠' },
+  { name: 'Grand Market', x: '62%', y: '58%', icon: '🏪' },
 ]
 
 export default function HubHomePage() {
   return (
-    <div className="min-h-screen" style={{ background: '#0e1a0e', color: '#fff' }}>
-
-      {/* ── Hero ── */}
-      <section className="relative flex min-h-[92vh] flex-col items-center justify-center overflow-hidden px-6 text-center">
-
-        {/* Background map */}
-        <div className="absolute inset-0 opacity-60">
-          <VillageScene />
-        </div>
-
-        {/* Gradient overlay */}
-        <div
-          className="pointer-events-none absolute inset-0"
+    <AppShell>
+      <div className="flex flex-col">
+        {/* ── Top nav bar ── */}
+        <header
+          className="flex items-center justify-between px-6 py-3"
           style={{
-            background:
-              'radial-gradient(ellipse 70% 65% at 50% 48%, rgba(14,26,14,0.15) 0%, rgba(10,18,10,0.82) 70%, #0e1a0e 100%)',
+            background: 'rgba(255,250,240,0.95)',
+            borderBottom: '1px solid #d8cfbc',
           }}
-        />
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center gap-6">
-          {/* Seal badge */}
-          <div
-            className="flex h-14 w-14 items-center justify-center rounded-full text-2xl"
-            style={{
-              border: '2px solid rgba(212,168,80,0.55)',
-              background: 'rgba(8,14,8,0.7)',
-              color: 'var(--kc-warm)',
-            }}
-          >
-            ⌂
-          </div>
-
+        >
           <h1
-            className="max-w-2xl text-[clamp(2.4rem,6vw,4.5rem)] font-bold uppercase leading-[1.05] tracking-[0.04em]"
-            style={{ textShadow: '0 4px 40px rgba(0,0,0,0.6)' }}
+            className="text-lg font-bold italic"
+            style={{ color: '#1c2e1e' }}
           >
-            The Hamlet
+            The Digital Homestead
           </h1>
-
-          <p
-            className="max-w-sm text-base leading-7"
-            style={{ color: 'rgba(255,255,255,0.62)' }}
-          >
-            The village grows stronger with every stroke of the keys.
-            Type to build, harvest to grow, and claim your legend.
-          </p>
-
-          <div className="mt-2 flex items-center gap-3">
-            <Link
-              href="/play"
-              className="rounded-full px-7 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-              style={{ background: 'var(--kc-accent)', boxShadow: '0 4px 24px rgba(74,140,58,0.45)' }}
-            >
-              Start Your Harvest
-            </Link>
-            <Link
-              href="/home/map"
-              className="rounded-full border px-7 py-3 text-sm font-semibold transition hover:bg-white/10"
-              style={{ borderColor: 'rgba(255,255,255,0.25)', color: 'rgba(255,255,255,0.8)' }}
-            >
-              View The Map
-            </Link>
-          </div>
-        </div>
-
-        {/* Bottom fade */}
-        <div
-          className="pointer-events-none absolute bottom-0 left-0 right-0 h-32"
-          style={{ background: 'linear-gradient(to bottom, transparent, #0e1a0e)' }}
-        />
-      </section>
-
-      {/* ── Tools of the Trade ── */}
-      <section className="px-8 pb-16 pt-4">
-        <div className="mx-auto max-w-4xl">
-          <p
-            className="mb-1 text-center text-[10px] uppercase tracking-[0.28em]"
-            style={{ color: 'var(--kc-warm)' }}
-          >
-            How it works
-          </p>
-          <h2 className="mb-8 text-center text-2xl font-bold uppercase tracking-[0.06em]">
-            Tools of the Trade
-          </h2>
-
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {tools.map(({ icon, title, desc }) => (
+          <div className="flex items-center gap-3">
+            {[
+              { icon: '🪙', value: '1,240', label: '' },
+              { icon: '🌲', value: '84', label: '' },
+              { icon: '🏅', value: 'Rank 3', label: '' },
+            ].map((r) => (
               <div
-                key={title}
-                className="flex flex-col gap-3 rounded-2xl p-5"
+                key={r.value}
+                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5"
                 style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: '#faf7f0',
+                  border: '1px solid #d8cfbc',
                 }}
               >
+                <span>{r.icon}</span>
                 <span
-                  className="flex h-10 w-10 items-center justify-center rounded-xl text-lg"
-                  style={{ background: 'var(--kc-sidebar-active)', color: 'var(--kc-warm)' }}
+                  className="text-sm font-bold"
+                  style={{ color: '#1c2e1e' }}
                 >
-                  {icon}
+                  {r.value}
                 </span>
-                <p className="text-sm font-semibold">{title}</p>
-                <p className="text-xs leading-5" style={{ color: 'rgba(255,255,255,0.48)' }}>
-                  {desc}
-                </p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </header>
 
-      {/* ── Stats bar ── */}
-      <div
-        className="flex items-center justify-center gap-12 border-t py-6 text-center"
-        style={{ borderColor: 'rgba(255,255,255,0.07)' }}
-      >
-        {([
-          { label: 'Words typed', value: '0' },
-          { label: 'Best WPM', value: '—' },
-          { label: 'Sessions', value: '0' },
-          { label: 'Accuracy', value: '—' },
-        ] as const).map(({ label, value }) => (
-          <div key={label}>
-            <p className="text-xl font-bold" style={{ color: 'var(--kc-warm)' }}>{value}</p>
-            <p className="mt-0.5 text-[11px] uppercase tracking-[0.16em]" style={{ color: 'rgba(255,255,255,0.38)' }}>
-              {label}
-            </p>
+        {/* ── Village scene ── */}
+        <div className="relative">
+          <div
+            className="relative h-[420px] w-full"
+            style={{
+              backgroundImage: 'url(/village-bg.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 30%',
+            }}
+          >
+            {/* Building labels */}
+            {buildings.map((b) => (
+              <div
+                key={b.name}
+                className="absolute flex items-center gap-1.5 rounded-md px-2.5 py-1"
+                style={{
+                  left: b.x,
+                  top: b.y,
+                  transform: 'translate(-50%, -50%)',
+                  background: 'rgba(20,30,20,0.82)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  backdropFilter: 'blur(4px)',
+                }}
+              >
+                <span className="text-xs">{b.icon}</span>
+                <span className="text-xs font-semibold text-white">
+                  {b.name}
+                </span>
+              </div>
+            ))}
+
+            {/* Active task card */}
+            <div
+              className="absolute right-4 top-4 w-[220px] rounded-xl p-4"
+              style={{
+                background: 'rgba(255,250,240,0.94)',
+                border: '1px solid #d8cfbc',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <p
+                  className="text-[9px] uppercase tracking-[0.2em]"
+                  style={{ color: '#d4a850' }}
+                >
+                  Active Task
+                </p>
+                <span style={{ color: '#d4a850' }}>!</span>
+              </div>
+              <p
+                className="mt-2 text-sm font-bold leading-snug"
+                style={{ color: '#1c2e1e' }}
+              >
+                Gather 100 Wood for the Winter Solstice Bonfire
+              </p>
+              <div className="mt-3">
+                <div className="flex items-baseline justify-between">
+                  <span
+                    className="text-xs"
+                    style={{ color: '#6a7a5e' }}
+                  >
+                    84/100
+                  </span>
+                </div>
+                <div
+                  className="mt-1 h-2 overflow-hidden rounded-full"
+                  style={{ background: '#d8cfbc' }}
+                >
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: '84%',
+                      background: '#4a8c3a',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
 
-    </div>
+        {/* ── Bottom panel ── */}
+        <div
+          className="grid grid-cols-[1fr_1fr_auto] gap-4 px-6 py-5"
+          style={{ background: '#f4efe4' }}
+        >
+          {/* Village Status */}
+          <div
+            className="rounded-xl p-5"
+            style={{
+              background: '#faf7f0',
+              border: '1px solid #d8cfbc',
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <span>🏘</span>
+              <h3
+                className="text-xs font-bold uppercase tracking-[0.18em]"
+                style={{ color: '#4a8c3a' }}
+              >
+                Village Status
+              </h3>
+            </div>
+            <dl className="mt-4 space-y-3">
+              {[
+                { label: 'Population', value: '42 Residents' },
+                { label: 'Happiness', value: 'Joyful (88%)' },
+                { label: 'Tax Rate', value: '12% / Day' },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className="flex items-baseline justify-between"
+                >
+                  <dt
+                    className="text-xs"
+                    style={{ color: '#6a7a5e' }}
+                  >
+                    {s.label}
+                  </dt>
+                  <dd
+                    className="text-sm font-bold"
+                    style={{ color: '#1c2e1e' }}
+                  >
+                    {s.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          {/* Queued */}
+          <div
+            className="rounded-xl p-5"
+            style={{
+              background: '#faf7f0',
+              border: '1px solid #d8cfbc',
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <span>⚒</span>
+              <h3
+                className="text-xs font-bold uppercase tracking-[0.18em]"
+                style={{ color: '#6a7a5e' }}
+              >
+                Queued
+              </h3>
+            </div>
+            <div className="mt-4 flex items-center gap-3">
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-xl"
+                style={{
+                  background: '#e8f0e4',
+                  border: '1px solid #d8cfbc',
+                }}
+              >
+                💧
+              </div>
+              <div>
+                <p
+                  className="text-[9px] uppercase tracking-[0.18em]"
+                  style={{ color: '#8a7a5a' }}
+                >
+                  Upgrading
+                </p>
+                <p
+                  className="text-sm font-bold"
+                  style={{ color: '#1c2e1e' }}
+                >
+                  Well House
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex flex-col gap-3">
+            <Link
+              href="/play"
+              className="flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold uppercase tracking-wider text-white transition hover:opacity-90"
+              style={{ background: '#4a8c3a' }}
+            >
+              <span>🏗</span>
+              Construct
+            </Link>
+            <button
+              className="flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold uppercase tracking-wider transition hover:opacity-90"
+              style={{
+                background: '#f0c878',
+                color: '#1c2e1e',
+              }}
+            >
+              <span>🔍</span>
+              Inspect
+            </button>
+          </div>
+        </div>
+      </div>
+    </AppShell>
   )
 }

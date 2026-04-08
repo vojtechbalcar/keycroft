@@ -1,176 +1,292 @@
 import React from 'react'
 import Link from 'next/link'
 
-const features = [
+const stats = [
+  { label: 'Community Story', value: '42,901', desc: 'Harvests Completed' },
+  { label: 'Village Tier', value: '104', desc: 'Avg Words Per Minute' },
+  { label: 'Total Scribes', value: '1,284', desc: 'Online Scribes' },
+]
+
+const tools = [
   {
-    icon: '⌨',
-    title: 'Typing Sessions',
-    desc: 'Each line you complete builds your village and sharpens your skill.',
+    letter: 'A',
+    title: 'Type to Build',
+    desc: 'Your keystrokes forge new dwellings, structures, and the quality of materials, from simple thatch to custom craftwork.',
   },
   {
-    icon: '⌂',
-    title: 'Your Village',
-    desc: 'Watch new structures appear as your words-per-minute grows.',
+    letter: 'B',
+    title: 'Milestone Rewards',
+    desc: 'Unlock rare artifacts and unique building tools as you level up your typing proficiency. Customize your corner of Keycroft.',
   },
   {
-    icon: '◈',
-    title: 'Milestones',
-    desc: 'Unlock new zones, buildings, and lore as you level up.',
-  },
-  {
-    icon: '↑',
-    title: 'Progress',
-    desc: 'Track WPM, accuracy, and streaks across every session.',
+    letter: 'C',
+    title: 'Artisan Tools',
+    desc: 'Upgrade your skills for speed. Master over the art of code. Earn gold from daily challenges to improve your domain.',
   },
 ]
 
-const encounters = [
-  { title: 'The Cottage', desc: 'Your first structure. Every word strengthens its walls.' },
-  { title: 'The Well', desc: 'Unlocks at 30 WPM. A source of life for your hamlet.' },
-  { title: 'The Market', desc: 'Trade your accuracy for rare blueprints.' },
-  { title: 'The Tower', desc: 'A symbol of mastery. Claimed by the fastest typists.' },
+const communityFeatures = [
+  {
+    icon: '📊',
+    title: 'Mutual Leaderboards',
+    desc: 'Rise through the ranks. View the top scribes in the community and see how you stack up.',
+  },
+  {
+    icon: '📜',
+    title: 'Village Blueprints',
+    desc: 'Discover new craft combinations for the most impressive of structure designs.',
+  },
+  {
+    icon: '⚔️',
+    title: 'Clan Guilds',
+    desc: 'Form a guild with friends to share resources and collaborate on building.',
+  },
+  {
+    icon: '📖',
+    title: 'Epic Sagas',
+    desc: 'Collaborative writing quests that push your speed and imagination to the limit.',
+  },
 ]
 
 export default function MarketingHomePage() {
   return (
-    <div style={{ background: '#0e1a0e', color: '#fff', minHeight: '100vh' }}>
+    <div style={{ background: '#f4efe4', color: '#1c2e1e' }}>
 
       {/* ── Nav ── */}
       <nav
-        className="flex items-center justify-between px-8 py-5"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        className="flex items-center justify-between px-8 py-3"
+        style={{
+          background: '#2d4a2e',
+          borderBottom: '3px solid #d4a850',
+        }}
       >
-        <span className="text-sm font-semibold uppercase tracking-[0.22em]" style={{ color: 'var(--kc-warm)' }}>
-          Keycroft
-        </span>
-        <div className="flex items-center gap-6">
-          <Link href="/home" className="text-sm transition" style={{ color: 'rgba(255,255,255,0.55)' }}>
-            The Village
-          </Link>
-          <Link
-            href="/play"
-            className="rounded-full px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: 'var(--kc-accent)' }}
+        <div className="flex items-center gap-2">
+          <span className="text-lg" style={{ color: '#7aaa82' }}>🌿</span>
+          <span
+            className="text-sm font-bold uppercase tracking-[0.18em]"
+            style={{ color: '#f4efe4' }}
           >
-            Play Free
-          </Link>
+            Keycroft
+          </span>
         </div>
+
+        <div className="hidden items-center gap-8 md:flex">
+          {['The Village', 'Mechanics', 'Daily Harvest', 'Leaderboard'].map((item) => (
+            <Link
+              key={item}
+              href={item === 'The Village' ? '/home' : '#'}
+              className="text-sm transition hover:opacity-100"
+              style={{ color: 'rgba(244,239,228,0.7)' }}
+            >
+              {item}
+            </Link>
+          ))}
+        </div>
+
+        <Link
+          href="/play"
+          className="rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-90"
+          style={{ background: '#4a8c3a', color: '#fff' }}
+        >
+          Start Your Harvest
+        </Link>
       </nav>
 
       {/* ── Hero ── */}
       <section
-        className="relative flex min-h-[88vh] flex-col items-center justify-center overflow-hidden px-6 text-center"
+        className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden text-center"
         style={{
-          background: 'radial-gradient(ellipse 90% 70% at 50% 30%, #1e3d22 0%, #0e1a0e 65%)',
+          backgroundImage: 'url(/village-bg.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 30%',
+          backgroundColor: '#1e3d22',
         }}
       >
-        {/* Background texture dots */}
+        {/* Dark overlay */}
         <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.04]"
+          className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
+            background:
+              'linear-gradient(to bottom, rgba(20,38,20,0.55) 0%, rgba(14,26,14,0.68) 50%, rgba(14,26,14,0.88) 85%, #f4efe4 100%)',
           }}
         />
 
-        {/* Glow */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-0 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/4 rounded-full opacity-20 blur-[120px]"
-          style={{ background: 'var(--kc-accent)' }}
-        />
+        {/* Sparkle decorations */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          {[
+            { top: '12%', left: '18%', size: 3 },
+            { top: '8%', left: '75%', size: 2.5 },
+            { top: '22%', left: '82%', size: 2 },
+            { top: '18%', left: '12%', size: 2 },
+            { top: '30%', left: '88%', size: 1.5 },
+            { top: '6%', left: '45%', size: 2 },
+            { top: '35%', left: '8%', size: 1.5 },
+          ].map((s, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full"
+              style={{
+                top: s.top,
+                left: s.left,
+                width: s.size * 2,
+                height: s.size * 2,
+                background: 'radial-gradient(circle, rgba(212,168,80,0.8), transparent 70%)',
+                boxShadow: `0 0 ${s.size * 4}px rgba(212,168,80,0.4)`,
+              }}
+            />
+          ))}
+        </div>
 
-        <div className="relative z-10 flex flex-col items-center gap-7">
-          {/* Seal */}
-          <div
-            className="flex h-16 w-16 items-center justify-center rounded-full text-2xl"
-            style={{
-              border: '2px solid rgba(212,168,80,0.5)',
-              background: 'rgba(8,14,8,0.8)',
-              color: 'var(--kc-warm)',
-              boxShadow: '0 0 32px rgba(212,168,80,0.15)',
-            }}
-          >
-            ⌂
-          </div>
-
-          <p className="text-[11px] uppercase tracking-[0.3em]" style={{ color: 'var(--kc-warm)' }}>
-            A cozy typing world
-          </p>
-
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center gap-5 px-6">
           <h1
-            className="max-w-3xl text-[clamp(2.8rem,7vw,5.5rem)] font-bold uppercase leading-[1.0] tracking-[0.04em]"
-            style={{ textShadow: '0 4px 48px rgba(0,0,0,0.5)' }}
+            className="max-w-3xl text-[clamp(2.4rem,6vw,4.8rem)] font-bold uppercase leading-[1.05] tracking-[0.03em] text-white"
+            style={{ textShadow: '0 4px 40px rgba(0,0,0,0.5)' }}
           >
-            The Digital<br />Homestead
+            The Digital
+            <br />
+            Homestead
           </h1>
 
           <p
-            className="max-w-md text-base leading-7"
-            style={{ color: 'rgba(255,255,255,0.58)' }}
+            className="max-w-lg text-base leading-7"
+            style={{ color: 'rgba(255,255,255,0.72)' }}
           >
-            The village grows stronger with every stroke of the keys.
-            Type to build, harvest to grow, and claim your legend.
+            Cultivate your typing skills to expand your artisanal
+            village. Every word is a brick, every sentence a harvest.
           </p>
 
-          <div className="mt-1 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/play"
-              className="rounded-full px-8 py-3.5 text-sm font-semibold text-white transition hover:opacity-90"
-              style={{ background: 'var(--kc-accent)', boxShadow: '0 4px 28px rgba(74,140,58,0.45)' }}
+              className="rounded-full px-7 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+              style={{
+                background: '#4a8c3a',
+                boxShadow: '0 4px 24px rgba(74,140,58,0.4)',
+              }}
             >
               Start Your Harvest
             </Link>
             <Link
               href="/home"
-              className="rounded-full border px-8 py-3.5 text-sm font-semibold transition hover:bg-white/10"
-              style={{ borderColor: 'rgba(255,255,255,0.22)', color: 'rgba(255,255,255,0.75)' }}
+              className="rounded-full border px-7 py-3 text-sm font-semibold transition hover:bg-white/10"
+              style={{
+                borderColor: 'rgba(255,255,255,0.3)',
+                color: 'rgba(255,255,255,0.8)',
+              }}
             >
-              View The Map
+              View the Map
             </Link>
           </div>
-        </div>
 
-        {/* Bottom fade */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-0 left-0 right-0 h-40"
-          style={{ background: 'linear-gradient(to bottom, transparent, #0e1a0e)' }}
-        />
+          {/* Play / video button */}
+          <button
+            className="mt-4 flex items-center gap-2 transition hover:opacity-80"
+            style={{ color: 'rgba(255,255,255,0.45)' }}
+          >
+            <span
+              className="flex h-8 w-8 items-center justify-center rounded-full text-xs"
+              style={{ border: '1px solid rgba(255,255,255,0.3)' }}
+            >
+              ▶
+            </span>
+            <span className="text-xs uppercase tracking-widest">
+              Season video harvest
+            </span>
+          </button>
+        </div>
+      </section>
+
+      {/* ── Stats ── */}
+      <section style={{ background: '#f4efe4' }} className="px-6 py-12 md:px-8">
+        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-5 md:grid-cols-3">
+          {stats.map((s) => (
+            <div
+              key={s.label}
+              className="rounded-xl p-6 text-center"
+              style={{
+                border: '1px solid #c8b890',
+                background: '#faf7f0',
+              }}
+            >
+              <p
+                className="text-[10px] uppercase tracking-[0.25em]"
+                style={{ color: '#8a7a5a' }}
+              >
+                {s.label}
+              </p>
+              <p
+                className="mt-2 text-3xl font-bold"
+                style={{ color: '#1c2e1e' }}
+              >
+                {s.value}
+              </p>
+              <p className="mt-1 text-xs" style={{ color: '#6a7a5a' }}>
+                {s.desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* ── Tools of the Trade ── */}
-      <section className="px-8 pb-20 pt-16">
-        <div className="mx-auto max-w-5xl">
+      <section style={{ background: '#f4efe4' }} className="px-6 pb-16 pt-8 md:px-8">
+        <div className="mx-auto max-w-4xl">
           <p
-            className="mb-1 text-center text-[10px] uppercase tracking-[0.28em]"
-            style={{ color: 'var(--kc-warm)' }}
+            className="mb-1 text-center text-[10px] uppercase tracking-[0.3em]"
+            style={{ color: '#8a7a5a' }}
           >
-            How it works
+            Mastery &amp; Growth
           </p>
-          <h2 className="mb-10 text-center text-2xl font-bold uppercase tracking-[0.06em]">
-            Tools of the Trade
-          </h2>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {features.map(({ icon, title, desc }) => (
+          {/* Heading with decorative line */}
+          <div className="mb-10 flex items-center justify-center gap-4">
+            <span
+              className="hidden h-px w-16 md:block"
+              style={{ background: '#c8b890' }}
+            />
+            <h2
+              className="text-center text-2xl font-bold"
+              style={{ color: '#1c2e1e' }}
+            >
+              Tools of the Trade
+            </h2>
+            <span
+              className="hidden h-px w-16 md:block"
+              style={{ background: '#c8b890' }}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {tools.map((t) => (
               <div
-                key={title}
-                className="flex flex-col gap-3 rounded-2xl p-5"
+                key={t.letter}
+                className="rounded-xl p-6"
                 style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.07)',
+                  border: '1px solid #d8cfbc',
+                  background: '#faf7f0',
                 }}
               >
-                <span
-                  className="flex h-10 w-10 items-center justify-center rounded-xl text-lg"
-                  style={{ background: '#2e5438', color: 'var(--kc-warm)' }}
+                <div
+                  className="mb-4 flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold"
+                  style={{
+                    border: '2px solid #4a8c3a',
+                    color: '#4a8c3a',
+                    background: '#e8f0e4',
+                  }}
                 >
-                  {icon}
-                </span>
-                <p className="text-sm font-semibold">{title}</p>
-                <p className="text-xs leading-5" style={{ color: 'rgba(255,255,255,0.44)' }}>
-                  {desc}
+                  {t.letter}
+                </div>
+                <p
+                  className="mb-2 font-semibold"
+                  style={{ color: '#1c2e1e' }}
+                >
+                  {t.title}
+                </p>
+                <p
+                  className="text-sm leading-6"
+                  style={{ color: '#5a6a5e' }}
+                >
+                  {t.desc}
                 </p>
               </div>
             ))}
@@ -178,86 +294,252 @@ export default function MarketingHomePage() {
         </div>
       </section>
 
-      {/* ── World Encounters ── */}
+      {/* ── The Village Square ── */}
       <section
-        className="px-8 py-16"
-        style={{ background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        style={{
+          background: '#f4efe4',
+          borderTop: '1px solid #d8cfbc',
+        }}
+        className="px-6 py-16 md:px-8"
       >
-        <div className="mx-auto max-w-5xl">
-          <p
-            className="mb-1 text-center text-[10px] uppercase tracking-[0.28em]"
-            style={{ color: 'var(--kc-warm)' }}
-          >
-            Discover
-          </p>
-          <h2 className="mb-10 text-center text-2xl font-bold uppercase tracking-[0.06em]">
-            World Encounters
-          </h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            {encounters.map(({ title, desc }) => (
-              <div
-                key={title}
-                className="flex items-start gap-4 rounded-2xl p-5"
-                style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.07)',
-                }}
-              >
-                <span
-                  className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm"
-                  style={{ background: '#2e5438', color: 'var(--kc-warm)' }}
-                >
-                  ◈
-                </span>
-                <div>
-                  <p className="text-sm font-semibold">{title}</p>
-                  <p className="mt-1 text-xs leading-5" style={{ color: 'rgba(255,255,255,0.44)' }}>
-                    {desc}
+        <div className="mx-auto flex max-w-5xl flex-col gap-10 md:flex-row">
+          {/* Left column */}
+          <div className="flex-1">
+            <p
+              className="mb-1 text-[10px] uppercase tracking-[0.3em]"
+              style={{ color: '#8a7a5a' }}
+            >
+              Community Hearth
+            </p>
+            <h2
+              className="mb-4 text-2xl font-bold"
+              style={{ color: '#1c2e1e' }}
+            >
+              The Village Square
+            </h2>
+            <p
+              className="mb-8 max-w-md text-sm leading-6"
+              style={{ color: '#5a6a5e' }}
+            >
+              Join a thriving community of digital homesteaders. Whether you&apos;re
+              a lone scribe or part of a bustling clan, there&apos;s always a seat by the
+              hearth.
+            </p>
+
+            <div className="grid grid-cols-2 gap-5">
+              {communityFeatures.map((f) => (
+                <div key={f.title}>
+                  <span
+                    className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg text-base"
+                    style={{ background: '#e8f0e4' }}
+                  >
+                    {f.icon}
+                  </span>
+                  <p
+                    className="mb-1 text-sm font-semibold"
+                    style={{ color: '#1c2e1e' }}
+                  >
+                    {f.title}
+                  </p>
+                  <p
+                    className="text-xs leading-5"
+                    style={{ color: '#6a7a5e' }}
+                  >
+                    {f.desc}
                   </p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          {/* Right column */}
+          <div className="flex w-full flex-col gap-4 md:w-[320px]">
+            {/* Image placeholder */}
+            <div
+              className="relative flex h-48 items-end justify-end overflow-hidden rounded-xl p-3"
+              style={{
+                background: '#e0dbd0',
+                border: '1px solid #d8cfbc',
+              }}
+            >
+              <span
+                className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-wider"
+                style={{
+                  background: '#d4a850',
+                  color: '#fff',
+                }}
+              >
+                Nearly Level Cap
+              </span>
+            </div>
+
+            {/* Become a Citizen card */}
+            <div
+              className="rounded-xl p-5"
+              style={{
+                border: '1px solid #d8cfbc',
+                background: '#faf7f0',
+              }}
+            >
+              <h3
+                className="mb-2 text-lg font-bold"
+                style={{ color: '#1c2e1e' }}
+              >
+                Become a Citizen
+              </h3>
+              <p
+                className="mb-4 text-xs leading-5"
+                style={{ color: '#6a7a5e' }}
+              >
+                Your reputation begins in a day. Set forth to claim
+                a village estate. Join ranks in homesteading mastery.
+              </p>
+              <Link
+                href="/play"
+                className="inline-block rounded-lg px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition hover:opacity-90"
+                style={{ background: '#4a8c3a' }}
+              >
+                Join the Guild
+              </Link>
+            </div>
+            {/* Decorative scroll icon */}
+            <div className="flex justify-end pr-2">
+              <span style={{ color: '#c8b890', fontSize: '24px' }}>🌿</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Stats bar ── */}
-      <div className="flex flex-wrap items-center justify-center gap-12 px-8 py-10 text-center">
-        {([
-          { label: 'Words typed', value: '43,951' },
-          { label: 'Peak WPM', value: '554' },
-          { label: 'Builders', value: '1.2K' },
-          { label: 'Sessions', value: '892' },
-        ] as const).map(({ label, value }) => (
-          <div key={label}>
-            <p className="text-2xl font-bold" style={{ color: 'var(--kc-warm)' }}>{value}</p>
-            <p className="mt-1 text-[11px] uppercase tracking-[0.16em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
-              {label}
+      {/* ── Testimonial ── */}
+      <section
+        style={{
+          background: '#f4efe4',
+          borderTop: '1px solid #d8cfbc',
+        }}
+        className="px-6 py-16 md:px-8"
+      >
+        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+          {/* Decorative quote mark */}
+          <div
+            className="mb-6 flex h-14 w-14 items-center justify-center rounded-full text-2xl"
+            style={{
+              border: '2px solid #c8b890',
+              color: '#d4a850',
+              background: '#faf7f0',
+            }}
+          >
+            &ldquo;
+          </div>
+          <blockquote
+            className="mb-6 max-w-xl text-lg italic leading-8"
+            style={{ color: '#2a3e2c' }}
+          >
+            &ldquo;Keycroft transformed my daily typing grind into a
+            meditative building experience. I&apos;ve watched my
+            small cabin grow into a grand manor, all through
+            the power of 120 words per minute.&rdquo;
+          </blockquote>
+
+          {/* Avatar + attribution */}
+          <div className="flex flex-col items-center gap-1">
+            <div
+              className="mb-2 flex h-12 w-12 items-center justify-center rounded-full text-xl"
+              style={{
+                background: '#e8f0e4',
+                border: '2px solid #c8b890',
+              }}
+            >
+              🧙
+            </div>
+            <p className="text-sm font-bold" style={{ color: '#1c2e1e' }}>
+              Master Scribe Julian
+            </p>
+            <p className="text-xs" style={{ color: '#8a7a5a' }}>
+              Order of the Typing Guild
             </p>
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
 
-      {/* ── CTA footer ── */}
-      <div
-        className="flex flex-col items-center gap-5 px-8 py-16 text-center"
-        style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+      {/* ── CTA ── */}
+      <section
+        className="px-6 py-20 text-center md:px-8"
+        style={{ background: '#2d4a2e' }}
       >
-        <h2 className="text-3xl font-bold uppercase tracking-[0.04em]">
-          Ready to start your harvest?
-        </h2>
-        <p className="max-w-sm text-sm leading-7" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          No account needed. Takes two minutes. Your village is waiting.
-        </p>
-        <Link
-          href="/play"
-          className="mt-2 rounded-full px-9 py-4 text-sm font-semibold text-white transition hover:opacity-90"
-          style={{ background: 'var(--kc-accent)', boxShadow: '0 4px 28px rgba(74,140,58,0.4)' }}
-        >
-          Start Your Harvest
-        </Link>
-      </div>
+        <div className="mx-auto max-w-2xl">
+          <h2 className="mb-4 text-3xl font-bold text-white">
+            Ready to start your first harvest?
+          </h2>
+          <p
+            className="mx-auto mb-8 max-w-md text-sm leading-7"
+            style={{ color: 'rgba(255,255,255,0.6)' }}
+          >
+            Join thousands of scribes mastering the ultimate digital
+            framework. Your legacy begins with the first word.
+          </p>
+          <Link
+            href="/play"
+            className="inline-block rounded-full px-8 py-3.5 text-sm font-bold uppercase tracking-wider transition hover:opacity-90"
+            style={{
+              background: '#4a8c3a',
+              color: '#fff',
+              boxShadow: '0 4px 24px rgba(74,140,58,0.4)',
+            }}
+          >
+            Enter Keycroft Now
+          </Link>
+        </div>
+      </section>
 
+      {/* ── Footer ── */}
+      <footer
+        className="px-6 py-8 md:px-8"
+        style={{
+          background: '#1a2e1c',
+          borderTop: '2px solid #d4a850',
+        }}
+      >
+        <div className="mx-auto flex max-w-5xl flex-col gap-6">
+          {/* Top row */}
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="flex items-center gap-2">
+              <span style={{ color: '#7aaa82' }}>🌿</span>
+              <span
+                className="text-sm font-bold uppercase tracking-[0.18em]"
+                style={{ color: '#f4efe4' }}
+              >
+                Keycroft
+              </span>
+            </div>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              &copy; Keycroft &middot; All rights reserved.
+            </p>
+          </div>
+
+          {/* Footer links */}
+          <div
+            className="flex flex-wrap items-center justify-center gap-6 border-t pt-5"
+            style={{ borderColor: 'rgba(255,255,255,0.1)' }}
+          >
+            {[
+              'The Village',
+              'Workshops',
+              'Data & Privacy',
+              'Privacy',
+              'Terms',
+            ].map((link) => (
+              <Link
+                key={link}
+                href="#"
+                className="text-xs transition hover:opacity-80"
+                style={{ color: 'rgba(255,255,255,0.45)' }}
+              >
+                {link}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
