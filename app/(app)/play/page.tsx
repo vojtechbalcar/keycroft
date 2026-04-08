@@ -7,6 +7,11 @@ import { TypingSurface } from '@/components/typing/typing-surface'
 import { practiceTexts } from '@/lib/typing/practice-texts'
 import { calculateSessionMetrics } from '@/lib/typing/session-metrics'
 import type { TypingSessionState } from '@/lib/typing/text-runner'
+import {
+  readGuestProgress,
+  recordPracticeSession,
+  saveGuestProgress,
+} from '@/lib/storage/guest-progress'
 
 export default function PlayPage() {
   const [promptIndex, setPromptIndex] = useState(0)
@@ -18,6 +23,24 @@ export default function PlayPage() {
     completedSession === null
       ? null
       : calculateSessionMetrics(completedSession)
+
+  function persistCompletedSession(session: TypingSessionState) {
+    const m = calculateSessionMetrics(session)
+    const storage = window.localStorage
+    const progress = readGuestProgress(storage)
+    const nextProgress = recordPracticeSession(progress, {
+      completedAt: new Date().toISOString(),
+      wpm: m.wpm,
+      accuracy: m.accuracy,
+      correctedErrors: m.correctedErrors,
+    })
+    saveGuestProgress(storage, nextProgress)
+  }
+
+  function handleComplete(session: TypingSessionState) {
+    persistCompletedSession(session)
+    setCompletedSession(session)
+  }
 
   function handleTryAnother() {
     setPromptIndex((current) => (current + 1) % practiceTexts.length)
@@ -188,7 +211,7 @@ export default function PlayPage() {
           {metrics === null ? (
             <TypingSurface
               key={prompt.id}
-              onComplete={setCompletedSession}
+              onComplete={handleComplete}
               prompt={prompt}
             />
           ) : (
