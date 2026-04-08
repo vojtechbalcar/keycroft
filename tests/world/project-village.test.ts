@@ -9,12 +9,25 @@ function makeProgress(overrides: Partial<GuestProgress> = {}): GuestProgress {
     placement: null,
     events: [],
     recentSessions: [],
+    completedChapterIds: [],
     ...overrides,
   }
 }
 
 function makePlacement(wpm: number = 30, accuracy: number = 80) {
-  return { wpm, accuracy, phaseId: 'lantern' as const }
+  return {
+    phaseId: 'lantern' as const,
+    phaseName: 'Lantern Room',
+    summary: 'Build clean key recall with calm, repeatable rhythm.',
+    recommendedFocus: 'Stay accurate before pushing pace.',
+    reason: 'Seeded village test placement.',
+    selfRating: 'steady-practice' as const,
+    metrics: {
+      wpm,
+      accuracy,
+      correctedErrors: 1,
+    },
+  }
 }
 
 function makePracticeEvent(accuracy: number, phaseId: 'lantern' | 'workshop' | 'lookout'): ProgressEvent {

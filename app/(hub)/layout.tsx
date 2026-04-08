@@ -1,5 +1,14 @@
 import React, { type ReactNode } from 'react'
 
-export default function HubLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>
+import { AppShell } from '@/components/layout/app-shell'
+import { getSessionUser } from '@/lib/auth/get-session-user'
+
+export default async function HubLayout({
+  children,
+}: {
+  children: ReactNode
+}) {
+  const sessionUser = await getSessionUser()
+
+  return <AppShell sessionUser={sessionUser}>{children}</AppShell>
 }

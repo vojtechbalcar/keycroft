@@ -24,7 +24,7 @@ export default function OnboardingPage() {
       router.replace('/home')
       return
     }
-    setReady(true)
+    queueMicrotask(() => setReady(true))
   }, [router])
 
   function handlePlacementComplete(result: PlacementResult) {

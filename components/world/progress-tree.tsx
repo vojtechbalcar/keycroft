@@ -50,7 +50,7 @@ const DOT_STYLES: Record<DotState, { bg: string; border: string; label: string }
   },
 }
 
-export function ProgressTree({ currentPhaseId, regions: _ }: ProgressTreeProps) {
+export function ProgressTree({ currentPhaseId }: ProgressTreeProps) {
   return (
     <div className="rounded-xl p-5" style={{ background: '#faf7f0', border: '1px solid var(--kc-line-light)' }}>
       <div className="flex items-center gap-2 mb-4">

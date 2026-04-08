@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 
+import { useSessionUser } from '@/components/layout/session-context'
 import { SessionSummary } from '@/components/typing/session-summary'
 import { TypingSurface } from '@/components/typing/typing-surface'
+import { syncProgressAfterLocalWrite } from '@/lib/storage/progress-sync'
 import { practiceTexts } from '@/lib/typing/practice-texts'
 import { calculateSessionMetrics } from '@/lib/typing/session-metrics'
 import type { TypingSessionState } from '@/lib/typing/text-runner'
@@ -17,6 +19,7 @@ export default function PlayPage() {
   const [promptIndex, setPromptIndex] = useState(0)
   const [completedSession, setCompletedSession] =
     useState<TypingSessionState | null>(null)
+  const sessionUser = useSessionUser()
 
   const prompt = practiceTexts[promptIndex]
   const metrics =
@@ -35,6 +38,7 @@ export default function PlayPage() {
       correctedErrors: m.correctedErrors,
     })
     saveGuestProgress(storage, nextProgress)
+    void syncProgressAfterLocalWrite(storage, sessionUser !== null)
   }
 
   function handleComplete(session: TypingSessionState) {

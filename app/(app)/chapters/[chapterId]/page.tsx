@@ -1,47 +1,45 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
 import { ChapterSession } from '@/components/typing/chapter-session'
 import { loadChapter } from '@/lib/content/load-chapter'
 import { isChapterUnlocked } from '@/lib/progression/chapter-progress'
-import { ensureGuestProfile } from '@/lib/storage/guest-profile'
 import {
   readGuestProgress,
   recordCompletedChapter,
   recordPracticeSession,
   saveGuestProgress,
-  type GuestProgress,
 } from '@/lib/storage/guest-progress'
+import { syncProgressAfterLocalWrite } from '@/lib/storage/progress-sync'
+import { useResolvedProgress } from '@/lib/storage/use-resolved-progress'
 import { calculateSessionMetrics } from '@/lib/typing/session-metrics'
 import type { TypingSessionState } from '@/lib/typing/text-runner'
 
 export default function ChapterPage() {
   const params = useParams<{ chapterId: string }>()
   const router = useRouter()
-  const [progress, setProgress] = useState<GuestProgress | null>(null)
+  const { progress, setProgress, signedIn } = useResolvedProgress()
 
   const chapterId = params.chapterId
   const chapter = loadChapter(chapterId)
 
   useEffect(() => {
-    const storage = window.localStorage
-    ensureGuestProfile(storage)
-    const stored = readGuestProgress(storage)
+    if (progress === null) {
+      return
+    }
 
-    if (stored.placement === null) {
+    if (progress.placement === null) {
       router.replace('/onboarding')
       return
     }
 
-    if (!isChapterUnlocked(stored.currentPhaseId, chapter.phaseId)) {
+    if (!isChapterUnlocked(progress.currentPhaseId, chapter.phaseId)) {
       router.replace('/home')
       return
     }
-
-    setProgress(stored)
-  }, [chapter.phaseId, router])
+  }, [chapter.phaseId, progress, router])
 
   function persistSession(session: TypingSessionState) {
     const storage = window.localStorage
@@ -55,6 +53,7 @@ export default function ChapterPage() {
     })
     saveGuestProgress(storage, nextProgress)
     setProgress(nextProgress)
+    void syncProgressAfterLocalWrite(storage, signedIn)
   }
 
   function handleChapterComplete(completedChapterId: string) {
@@ -63,6 +62,7 @@ export default function ChapterPage() {
     const nextProgress = recordCompletedChapter(currentProgress, completedChapterId)
     saveGuestProgress(storage, nextProgress)
     setProgress(nextProgress)
+    void syncProgressAfterLocalWrite(storage, signedIn)
   }
 
   if (!progress) {
