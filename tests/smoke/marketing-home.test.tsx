@@ -10,7 +10,7 @@ describe('MarketingHomePage', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: /build a village while you build real typing skill/i,
+        name: /the digital homestead/i,
       }),
     ).toBeInTheDocument()
   })

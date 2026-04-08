@@ -2,16 +2,14 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
-import AppHomePage from '@/app/(app)/home/page'
+import AppHomePage from '@/app/(hub)/home/page'
 
 describe('AppHomePage', () => {
-  it('renders the village hub with chapter CTA', () => {
+  it('renders the loading state before progress is fetched', () => {
     render(<AppHomePage />)
 
     expect(
-      screen.getByRole('heading', {
-        name: /chapter 1/i,
-      }),
+      screen.getByText(/loading your village/i),
     ).toBeInTheDocument()
   })
 })
