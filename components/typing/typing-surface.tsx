@@ -29,15 +29,15 @@ function getCharacterClassName(
   isCursorPosition: boolean,
 ): string {
   if (status === 'correct') {
-    return 'text-[#1c2e1e]'
+    return 'text-[var(--kc-on-surface)]'
   }
   if (status === 'incorrect') {
-    return 'rounded-sm bg-[rgba(200,155,109,0.25)] text-[#c0392b]'
+    return 'rounded-sm bg-[var(--kc-error-bg)] text-[var(--kc-error)]'
   }
   if (isCursorPosition) {
-    return 'rounded-sm bg-[rgba(122,143,98,0.12)] text-[#1c2e1e]'
+    return 'rounded-sm bg-[rgba(74,140,58,0.10)] text-[var(--kc-on-surface)]'
   }
-  return 'text-[#a09882]'
+  return 'text-[var(--kc-on-surface-faint)]'
 }
 
 export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
@@ -114,31 +114,32 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
       <div
         className="flex items-center justify-between px-6 py-3"
         style={{
-          background: '#faf7f0',
-          borderBottom: '1px solid #d8cfbc',
+          background: 'var(--kc-surface)',
+          borderBottom: '1px solid var(--kc-line-light)',
         }}
       >
         <div className="flex items-center gap-2">
           <span
-            className="text-[10px] uppercase tracking-[0.2em]"
-            style={{ color: '#8a7a5a' }}
+            className="text-[10px] uppercase tracking-[0.16em]"
+            style={{ color: 'var(--kc-on-surface-muted)' }}
           >
             {prompt.label}
           </span>
-          <span style={{ color: '#c8b890' }}>›</span>
+          <span style={{ color: 'var(--kc-line-light)' }}>›</span>
           <span
-            className="text-[10px] uppercase tracking-[0.2em]"
-            style={{ color: '#5a6a5e' }}
+            className="text-[10px] uppercase tracking-[0.16em]"
+            style={{ color: 'var(--kc-on-surface-muted)' }}
           >
             Western Path
           </span>
         </div>
         <span
-          className="rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+          className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
           style={{
-            background: '#e8f0e4',
-            color: '#4a8c3a',
-            border: '1px solid #c8d8c0',
+            borderRadius: 'var(--kc-radius-badge)',
+            background: 'rgba(58,114,48,0.10)',
+            color: 'var(--kc-accent-on-surface)',
+            border: '1px solid rgba(58,114,48,0.18)',
           }}
         >
           Focus

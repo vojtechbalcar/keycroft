@@ -1,36 +1,49 @@
 @import 'tailwindcss';
 
 :root {
-  /* Sidebar / chrome */
-  --kc-sidebar: #1b3321;
-  --kc-sidebar-hover: #243f2c;
+  /* ── Sidebar / chrome (dark green) ──────────────────────────── */
+  --kc-sidebar:        #1b3321;
+  --kc-sidebar-hover:  #243f2c;
   --kc-sidebar-active: #2e5438;
   --kc-sidebar-border: #274030;
 
-  /* Page background */
+  /* ── Page background ─────────────────────────────────────────── */
   --kc-background: #111d14;
 
-  /* Content cards (light cream surface) */
-  --kc-surface: #f4efe4;
-  --kc-surface-2: #ece6d8;
+  /* ── Cream surfaces ──────────────────────────────────────────── */
+  --kc-surface:       #f4efe4;
+  --kc-surface-2:     #ece6d8;
+  --kc-surface-glass: rgba(244, 239, 228, 0.95);
 
-  /* Text */
-  --kc-text: #ffffff;
-  --kc-text-dark: #1c2e1e;
-  --kc-muted: #7aaa82;
-  --kc-muted-dark: #5a7a5e;
+  /* ── Text on DARK backgrounds ────────────────────────────────── */
+  --kc-text:       #ffffff;
+  --kc-muted:      #7aaa82;  /* muted green — DARK BG ONLY */
 
-  /* Borders */
-  --kc-line: #2e4a34;
-  --kc-line-light: #d8cfbc;
+  /* ── Text on CREAM/LIGHT surfaces ───────────────────────────── */
+  --kc-on-surface:       #1c2e1e;  /* headings & values  — 14:1 on cream */
+  --kc-on-surface-muted: #6b5e48;  /* labels & captions  — 4.8:1 on cream */
+  --kc-on-surface-faint: #9a8e7c;  /* hints & placeholders */
 
-  /* Accent */
-  --kc-accent: #4a8c3a;
+  /* ── Borders ─────────────────────────────────────────────────── */
+  --kc-line:       #2e4a34;  /* border on DARK backgrounds */
+  --kc-line-light: #d4c9b4;  /* border on CREAM surfaces */
+
+  /* ── Accent (forest green) ───────────────────────────────────── */
+  --kc-accent:        #4a8c3a;
   --kc-accent-strong: #3a7230;
+  --kc-accent-on-surface: #356628;  /* accent green with AA contrast on cream */
 
-  /* Warm / gold */
-  --kc-warm: #d4a850;
-  --kc-gold: #f5c842;
+  /* ── Warm gold (single canonical token) ──────────────────────── */
+  --kc-warm: #c49b3c;  /* 3.2:1 on cream — decorative / large text only */
+
+  /* ── Error state ─────────────────────────────────────────────── */
+  --kc-error:    #b8341b;
+  --kc-error-bg: rgba(200, 130, 100, 0.20);
+
+  /* ── Radius scale ────────────────────────────────────────────── */
+  --kc-radius-card:  28px;   /* outer containers */
+  --kc-radius-inner: 16px;   /* inner panels / metric cards */
+  --kc-radius-badge: 8px;    /* tags, badges */
 }
 
 * {
@@ -63,16 +76,17 @@ a {
   text-decoration: none;
 }
 
+/* ── Typing cursor ────────────────────────────────────────────── */
 @keyframes kc-blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  50%       { opacity: 0; }
 }
 
 .kc-cursor {
   display: block;
   width: 2px;
   height: 1.1em;
-  background: var(--kc-text-dark);
+  background: var(--kc-on-surface);
   align-self: flex-end;
   margin-bottom: 0.08em;
   margin-right: 1px;
@@ -81,28 +95,25 @@ a {
   animation: kc-blink 0.85s ease-in-out infinite;
 }
 
+/* ── Village smoke ───────────────────────────────────────────── */
 @keyframes kc-smoke {
-  0% {
-    transform: translateY(0) translateX(0) scale(1);
-    opacity: 0.55;
-  }
-  100% {
-    transform: translateY(-20px) translateX(3px) scale(1.8);
-    opacity: 0;
-  }
+  0%   { transform: translateY(0) translateX(0) scale(1);   opacity: 0.55; }
+  100% { transform: translateY(-20px) translateX(3px) scale(1.8); opacity: 0; }
 }
 
 .kc-smoke-1 { animation: kc-smoke 2.8s ease-in-out infinite; }
 .kc-smoke-2 { animation: kc-smoke 2.8s ease-in-out 0.93s infinite; }
 .kc-smoke-3 { animation: kc-smoke 2.8s ease-in-out 1.86s infinite; }
 
+/* ── Lantern glow ────────────────────────────────────────────── */
 @keyframes kc-glow-pulse {
   0%, 100% { opacity: 0.25; }
-  50% { opacity: 0.45; }
+  50%       { opacity: 0.45; }
 }
 
 .kc-glow { animation: kc-glow-pulse 3.2s ease-in-out infinite; }
 
+/* ── Reduced motion ──────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .kc-cursor,
   .kc-smoke-1,

@@ -7,7 +7,7 @@ export function AppShell({ children }: PropsWithChildren) {
   return (
     <div
       className="flex min-h-screen"
-      style={{ background: 'var(--kc-background)', color: '#fff' }}
+      style={{ background: 'var(--kc-background)', color: 'var(--kc-text)' }}
     >
       {/* Sidebar */}
       <aside
@@ -26,7 +26,7 @@ export function AppShell({ children }: PropsWithChildren) {
             <div
               className="flex h-10 w-10 items-center justify-center rounded-lg text-lg"
               style={{
-                background: 'rgba(255,255,255,0.08)',
+                background: 'rgba(255,255,255,0.06)',
                 border: '1px solid var(--kc-sidebar-border)',
               }}
             >
@@ -115,7 +115,7 @@ export function AppShell({ children }: PropsWithChildren) {
         <div className="px-4 pb-5">
           <Link
             href="/play"
-            className="block w-full rounded-lg py-2.5 text-center text-sm font-semibold text-white transition hover:opacity-90"
+            className="block w-full rounded-lg py-2.5 text-center text-sm font-semibold text-white transition-[transform,opacity] hover:opacity-90 active:scale-[0.97]"
             style={{ background: 'var(--kc-accent)' }}
           >
             Start Harvest

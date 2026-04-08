@@ -49,52 +49,56 @@ export default function PlayPage() {
 
   return (
     <div className="flex flex-col">
-      {/* ── Top nav bar ── */}
+
+      {/* ── Top nav bar ─────────────────────────────────────────── */}
       <header
         className="flex items-center justify-between px-6 py-3"
         style={{
-          background: 'rgba(255,250,240,0.95)',
-          borderBottom: '1px solid #d8cfbc',
+          background: 'var(--kc-surface-glass)',
+          borderBottom: '1px solid var(--kc-line-light)',
         }}
       >
         <div className="flex items-center gap-3">
           <span
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold"
-            style={{ background: '#4a8c3a', color: '#fff' }}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white"
+            style={{ background: 'var(--kc-accent)' }}
           >
             K
           </span>
           <span
             className="text-lg font-bold"
-            style={{ color: '#1c2e1e' }}
+            style={{ color: 'var(--kc-on-surface)' }}
           >
             The Digital Homestead
           </span>
         </div>
+
         <nav className="flex items-center gap-8">
-          {['Production', 'The Village', 'Stockpile'].map((tab) => (
-            <span
-              key={tab}
-              className="text-sm"
-              style={{
-                color: tab === 'Production' ? '#4a8c3a' : '#6a7a5e',
-                fontWeight: tab === 'Production' ? 600 : 400,
-                borderBottom:
-                  tab === 'Production' ? '2px solid #4a8c3a' : 'none',
-                paddingBottom: 2,
-              }}
-            >
-              {tab}
-            </span>
-          ))}
-          <div className="flex items-center gap-3">
-            <span style={{ color: '#6a7a5e' }}>🎙</span>
-            <span style={{ color: '#6a7a5e' }}>👤</span>
+          {['Production', 'The Village', 'Stockpile'].map((tab) => {
+            const active = tab === 'Production'
+            return (
+              <span
+                key={tab}
+                className="text-sm"
+                style={{
+                  color: active ? 'var(--kc-accent-on-surface)' : 'var(--kc-on-surface-muted)',
+                  fontWeight: active ? 600 : 400,
+                  borderBottom: active ? '2px solid var(--kc-accent)' : 'none',
+                  paddingBottom: active ? 2 : 0,
+                }}
+              >
+                {tab}
+              </span>
+            )
+          })}
+          <div className="flex items-center gap-3" style={{ color: 'var(--kc-on-surface-muted)' }}>
+            <span>🎙</span>
+            <span>👤</span>
           </div>
         </nav>
       </header>
 
-      {/* ── Village scene ── */}
+      {/* ── Village scene ─────────────────────────────────────── */}
       <div className="relative">
         <div
           className="h-[340px] w-full"
@@ -106,48 +110,34 @@ export default function PlayPage() {
         >
           {/* Resource badges */}
           <div className="absolute right-4 top-4 flex flex-col gap-2">
-            <div
-              className="flex items-center gap-2 rounded-lg px-3 py-1.5"
-              style={{
-                background: 'rgba(255,250,240,0.92)',
-                border: '1px solid #d8cfbc',
-              }}
-            >
-              <span style={{ color: '#d4a850' }}>🪙</span>
-              <span
-                className="text-sm font-bold"
-                style={{ color: '#1c2e1e' }}
+            {[
+              { icon: '🪙', value: '1,240', label: 'Gold',  iconColor: 'var(--kc-warm)' },
+              { icon: '🌲', value: '84',    label: 'Wood',  iconColor: 'var(--kc-accent)' },
+            ].map(({ icon, value, label, iconColor }) => (
+              <div
+                key={label}
+                className="flex items-center gap-2 px-3 py-1.5"
+                style={{
+                  borderRadius: 'var(--kc-radius-badge)',
+                  background: 'var(--kc-surface-glass)',
+                  border: '1px solid var(--kc-line-light)',
+                }}
               >
-                1,240
-              </span>
-              <span
-                className="text-[10px] uppercase tracking-wider"
-                style={{ color: '#8a7a5a' }}
-              >
-                Gold
-              </span>
-            </div>
-            <div
-              className="flex items-center gap-2 rounded-lg px-3 py-1.5"
-              style={{
-                background: 'rgba(255,250,240,0.92)',
-                border: '1px solid #d8cfbc',
-              }}
-            >
-              <span style={{ color: '#4a8c3a' }}>🌲</span>
-              <span
-                className="text-sm font-bold"
-                style={{ color: '#1c2e1e' }}
-              >
-                84
-              </span>
-              <span
-                className="text-[10px] uppercase tracking-wider"
-                style={{ color: '#8a7a5a' }}
-              >
-                Wood
-              </span>
-            </div>
+                <span style={{ color: iconColor }}>{icon}</span>
+                <span
+                  className="text-sm font-bold"
+                  style={{ color: 'var(--kc-on-surface)' }}
+                >
+                  {value}
+                </span>
+                <span
+                  className="text-[10px] uppercase tracking-wider"
+                  style={{ color: 'var(--kc-on-surface-muted)' }}
+                >
+                  {label}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -155,52 +145,51 @@ export default function PlayPage() {
         <div
           className="flex items-center justify-between px-6 py-2"
           style={{
-            background: 'rgba(255,250,240,0.92)',
-            borderBottom: '1px solid #d8cfbc',
+            background: 'var(--kc-surface-glass)',
+            borderBottom: '1px solid var(--kc-line-light)',
           }}
         >
           <div
             className="h-3 flex-1 overflow-hidden rounded-full"
-            style={{ background: '#d8cfbc' }}
+            style={{ background: 'var(--kc-line-light)' }}
           >
             <div
               className="h-full rounded-full"
-              style={{ width: '58%', background: '#4a8c3a' }}
+              style={{ width: '58%', background: 'var(--kc-accent)' }}
             />
           </div>
           <span
             className="ml-4 text-xs font-semibold uppercase tracking-wider"
-            style={{ color: '#6a7a5e' }}
+            style={{ color: 'var(--kc-on-surface-muted)' }}
           >
             Road to the North →
           </span>
         </div>
       </div>
 
-      {/* ── Typing area ── */}
+      {/* ── Typing area ────────────────────────────────────────── */}
       <div
-        className="flex flex-1 gap-0 px-0"
-        style={{ background: '#f4efe4' }}
+        className="flex flex-1 gap-0"
+        style={{ background: 'var(--kc-surface)' }}
       >
         {/* Left stat: WPM */}
         <div
           className="flex w-[120px] shrink-0 flex-col items-center justify-center"
           style={{
-            background: '#faf7f0',
-            border: '1px solid #d8cfbc',
-            borderTop: 'none',
+            background: 'var(--kc-surface-2)',
+            borderRight: '1px solid var(--kc-line-light)',
           }}
         >
-          <span style={{ color: '#4a8c3a', fontSize: '20px' }}>📡</span>
+          <span style={{ color: 'var(--kc-accent)', fontSize: '20px' }}>📡</span>
           <p
             className="mt-2 text-4xl font-bold"
-            style={{ color: '#1c2e1e' }}
+            style={{ color: 'var(--kc-on-surface)' }}
           >
             72
           </p>
           <p
             className="text-[10px] uppercase tracking-wider"
-            style={{ color: '#8a7a5a' }}
+            style={{ color: 'var(--kc-on-surface-muted)' }}
           >
             WPM
           </p>
@@ -227,39 +216,37 @@ export default function PlayPage() {
         <div
           className="flex w-[120px] shrink-0 flex-col items-center justify-center"
           style={{
-            background: '#faf7f0',
-            border: '1px solid #d8cfbc',
-            borderTop: 'none',
+            background: 'var(--kc-surface-2)',
+            borderLeft: '1px solid var(--kc-line-light)',
           }}
         >
-          <span style={{ color: '#c0392b', fontSize: '20px' }}>🎯</span>
+          <span style={{ color: 'var(--kc-error)', fontSize: '20px' }}>🎯</span>
           <p
             className="mt-2 text-4xl font-bold"
-            style={{ color: '#1c2e1e' }}
+            style={{ color: 'var(--kc-on-surface)' }}
           >
-            98
-            <span className="text-lg">%</span>
+            98<span className="text-lg">%</span>
           </p>
           <p
             className="text-[10px] uppercase tracking-wider"
-            style={{ color: '#8a7a5a' }}
+            style={{ color: 'var(--kc-on-surface-muted)' }}
           >
             Accuracy
           </p>
         </div>
       </div>
 
-      {/* Bottom play button */}
+      {/* ── Bottom bar ─────────────────────────────────────────── */}
       <div
         className="flex items-center justify-end px-6 py-3"
         style={{
-          background: '#f4efe4',
-          borderTop: '1px solid #d8cfbc',
+          background: 'var(--kc-surface-2)',
+          borderTop: '1px solid var(--kc-line-light)',
         }}
       >
         <button
-          className="flex h-12 w-12 items-center justify-center rounded-lg text-xl text-white transition hover:opacity-90"
-          style={{ background: '#4a8c3a' }}
+          className="flex h-12 w-12 items-center justify-center rounded-lg text-xl text-white transition-[transform,opacity] hover:opacity-90 active:scale-[0.95]"
+          style={{ background: 'var(--kc-accent)' }}
         >
           ▶
         </button>

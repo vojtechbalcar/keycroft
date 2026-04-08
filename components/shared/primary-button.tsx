@@ -12,7 +12,8 @@ export function PrimaryButton({
 }: PrimaryButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center rounded-full bg-[var(--kc-accent)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[var(--kc-accent-strong)] ${className}`.trim()}
+      className={`inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-medium text-white transition-[transform,background-color] hover:bg-[var(--kc-accent-strong)] active:scale-[0.97] ${className}`.trim()}
+      style={{ background: 'var(--kc-accent)' }}
       type={type}
       {...props}
     >

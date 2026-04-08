@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Read(//usr/local/bin/**)",
+      "Read(//usr/local/lib/node_modules/npm/bin/**)",
+      "Bash(export PATH=/usr/local/bin:$PATH)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(curl -v http://localhost:3000/)",
+      "Bash(npx next:*)",
+      "Bash(ls /Users/vojtechbalcar/Documents/claudeProjects/typingWithAllTen/Inspo/*.png)"
+    ]
+  }
+}
