@@ -9,7 +9,15 @@ import type { GuestProgress } from '@/lib/storage/guest-progress'
 
 export const dynamic = 'force-dynamic'
 
-export const GET = auth(async (request) => {
+type AuthenticatedRequest = Request & {
+  auth?: {
+    user?: {
+      id?: string
+    }
+  }
+}
+
+export const GET = auth(async (request: AuthenticatedRequest) => {
   const userId = request.auth?.user?.id
 
   if (!userId) {
@@ -21,7 +29,7 @@ export const GET = auth(async (request) => {
   return Response.json({ progress })
 })
 
-export const POST = auth(async (request) => {
+export const POST = auth(async (request: AuthenticatedRequest) => {
   const userId = request.auth?.user?.id
 
   if (!userId) {

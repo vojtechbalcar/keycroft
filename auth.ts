@@ -13,6 +13,16 @@ const hasMagicLinkProvider = Boolean(
 const hasTestCredentialsProvider = process.env.AUTH_TEST_MODE === '1'
 const sessionStrategy = hasTestCredentialsProvider ? 'jwt' : 'database'
 
+type AuthUser = {
+  id?: string
+  email?: string | null
+  name?: string | null
+}
+
+type JwtToken = {
+  sub?: string | null
+}
+
 const providers = []
 
 if (hasMagicLinkProvider) {
@@ -43,7 +53,7 @@ if (hasTestCredentialsProvider) {
       credentials: {
         email: { label: 'Email', type: 'email' },
       },
-      async authorize(credentials) {
+      async authorize(credentials: { email?: string } | undefined) {
         const email = String(credentials?.email ?? '')
           .trim()
           .toLowerCase()
@@ -89,14 +99,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     verifyRequest: '/settings',
   },
   callbacks: {
-    jwt({ token, user }) {
+    jwt({ token, user }: { token: JwtToken; user?: AuthUser | null }) {
       if (user?.id) {
         token.sub = user.id
       }
 
       return token
     },
-    session({ session, user, token }) {
+    session({
+      session,
+      user,
+      token,
+    }: {
+      session: { user?: AuthUser | null }
+      user?: AuthUser | null
+      token?: JwtToken | null
+    }) {
       if (session.user) {
         session.user.id =
           (typeof user?.id === 'string' && user.id) ||

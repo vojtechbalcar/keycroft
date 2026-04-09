@@ -1,33 +1,36 @@
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import AppHomePage from '@/app/(hub)/home/page'
-import { guestProfileStorageKey } from '@/lib/storage/guest-profile'
-import { guestProgressStorageKey } from '@/lib/storage/guest-progress'
+import { createEmptyGuestProgress } from '@/lib/storage/guest-progress'
 import {
   resetNavigationMocks,
   routerSpies,
 } from '@/tests/__mocks__/next-navigation'
 
-function seedGuestProfile() {
-  window.localStorage.setItem(
-    guestProfileStorageKey,
-    JSON.stringify({
-      id: 'guest-123',
-      createdAt: '2026-04-01T08:00:00.000Z',
-      updatedAt: '2026-04-01T08:00:00.000Z',
-    }),
-  )
-}
+vi.mock('@/lib/storage/use-resolved-progress', () => ({
+  useResolvedProgress: vi.fn(),
+}))
+
+import { useResolvedProgress } from '@/lib/storage/use-resolved-progress'
+
+const mockedUseResolvedProgress = vi.mocked(useResolvedProgress)
 
 describe('AppHomePage', () => {
   beforeEach(() => {
-    window.localStorage.clear()
     resetNavigationMocks()
+    mockedUseResolvedProgress.mockReset()
   })
 
   it('renders the loading state before progress is fetched', () => {
+    mockedUseResolvedProgress.mockReturnValue({
+      progress: null,
+      setProgress: vi.fn(),
+      signedIn: false,
+      sessionUser: null,
+    })
+
     render(<AppHomePage />)
 
     expect(
@@ -36,6 +39,13 @@ describe('AppHomePage', () => {
   })
 
   it('redirects new guests into onboarding when placement is missing', async () => {
+    mockedUseResolvedProgress.mockReturnValue({
+      progress: createEmptyGuestProgress(),
+      setProgress: vi.fn(),
+      signedIn: false,
+      sessionUser: null,
+    })
+
     render(<AppHomePage />)
 
     await waitFor(() => {
@@ -44,10 +54,8 @@ describe('AppHomePage', () => {
   })
 
   it('shows the chapter path and side quest recommendation for a returning guest', async () => {
-    seedGuestProfile()
-    window.localStorage.setItem(
-      guestProgressStorageKey,
-      JSON.stringify({
+    mockedUseResolvedProgress.mockReturnValue({
+      progress: {
         currentPhaseId: 'lantern',
         placement: {
           phaseId: 'lantern',
@@ -80,8 +88,11 @@ describe('AppHomePage', () => {
           },
         ],
         completedChapterIds: ['ch01-arrival'],
-      }),
-    )
+      },
+      setProgress: vi.fn(),
+      signedIn: false,
+      sessionUser: null,
+    })
 
     render(<AppHomePage />)
 
