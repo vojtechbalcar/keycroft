@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const navItems = [
-  { label: 'The Village', href: '/home', icon: '🏘' },
+  { label: 'The Village', href: '/world', icon: '🏘' },
   { label: 'Production', href: '/play', icon: '⚒' },
   { label: 'Stockpile', href: '/progress', icon: '📦' },
   { label: 'Settings', href: '/settings', icon: '⚙' },
@@ -18,7 +18,7 @@ export function AppNav() {
       {navItems.map(({ label, href, icon }) => {
         const active =
           pathname === href ||
-          (href !== '/home' && pathname.startsWith(href))
+          (href !== '/world' && pathname.startsWith(href))
         return (
           <Link
             key={href}
