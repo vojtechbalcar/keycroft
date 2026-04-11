@@ -36,7 +36,7 @@ function computeVillageState(
 }
 
 export function projectWorld(progress: GuestProgress): WorldState {
-  const villageMastery = (progress as any).villageMastery ?? {}
+  const villageMastery = progress.villageMastery ?? {}
 
   const projections: VillageProjection[] = villageDefinitions.map((def) => {
     const mastery = villageMastery[def.id] ?? 0

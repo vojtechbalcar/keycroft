@@ -92,6 +92,7 @@ describe('ProgressPage', () => {
           },
         ],
         completedChapterIds: ['ch01-arrival', 'ch02-home-row'],
+        villageMastery: {},
       },
       setProgress: vi.fn(),
       signedIn: false,

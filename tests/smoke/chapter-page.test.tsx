@@ -56,6 +56,7 @@ describe('ChapterPage', () => {
         events: [],
         recentSessions: [],
         completedChapterIds: [],
+        villageMastery: {},
       },
       setProgress: vi.fn(),
       signedIn: false,

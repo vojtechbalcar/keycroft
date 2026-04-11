@@ -8,6 +8,7 @@ import {
 } from '@/lib/progression/progress-events'
 import { evaluateCurrentPhase } from '@/lib/progression/phase-evaluator'
 import type { StorageLike } from '@/lib/storage/guest-profile'
+import type { VillageId } from '@/lib/world/village-definitions'
 
 export type GuestProgress = {
   currentPhaseId: PhaseId | null
@@ -15,6 +16,7 @@ export type GuestProgress = {
   events: ProgressEvent[]
   recentSessions: StoredSessionSummary[]
   completedChapterIds: string[]
+  villageMastery: Partial<Record<VillageId, number>>
 }
 
 export const guestProgressStorageKey = 'keycroft.guest.progress'
@@ -26,6 +28,7 @@ export function createEmptyGuestProgress(): GuestProgress {
     events: [],
     recentSessions: [],
     completedChapterIds: [],
+    villageMastery: {},
   }
 }
 
@@ -37,6 +40,7 @@ export function readGuestProgress(storage: StorageLike): GuestProgress {
     ...createEmptyGuestProgress(),
     ...parsed,
     completedChapterIds: parsed.completedChapterIds ?? [],
+    villageMastery: parsed.villageMastery ?? {},
   }
 }
 
@@ -55,6 +59,7 @@ export function recordPlacementResult(
     events: [...progress.events, createPlacementCompletedEvent(placement, createdAt)],
     recentSessions: progress.recentSessions,
     completedChapterIds: progress.completedChapterIds,
+    villageMastery: progress.villageMastery,
   }
 }
 
@@ -86,5 +91,21 @@ export function recordCompletedChapter(
   return {
     ...progress,
     completedChapterIds: [...progress.completedChapterIds, chapterId],
+  }
+}
+
+export function recordVillageMasteryGain(
+  progress: GuestProgress,
+  villageId: VillageId,
+  gain: number,
+): GuestProgress {
+  const current = progress.villageMastery[villageId] ?? 0
+  const next = Math.min(100, current + gain)
+  return {
+    ...progress,
+    villageMastery: {
+      ...progress.villageMastery,
+      [villageId]: next,
+    },
   }
 }

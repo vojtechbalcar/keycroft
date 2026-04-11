@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import { projectWorld } from '@/lib/world/project-world'
 import { createEmptyGuestProgress } from '@/lib/storage/guest-progress'
+import type { GuestProgress } from '@/lib/storage/guest-progress'
 
-function makeProgress(overrides: Record<string, unknown> = {}) {
+function makeProgress(overrides: Partial<GuestProgress> = {}): GuestProgress {
   return {
     ...createEmptyGuestProgress(),
-    placement: { phaseId: 'lantern', phaseName: 'Lantern Room', summary: '', recommendedFocus: '', reason: '', selfRating: null, metrics: { wpm: 20, accuracy: 90, correctedErrors: 0 } },
+    placement: { phaseId: 'lantern' as const, phaseName: 'Lantern Room', summary: '', recommendedFocus: '', reason: '', selfRating: null, metrics: { wpm: 20, accuracy: 90, correctedErrors: 0 } },
     ...overrides,
   }
 }

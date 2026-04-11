@@ -10,6 +10,7 @@ function makeProgress(overrides: Partial<GuestProgress> = {}): GuestProgress {
     events: [],
     recentSessions: [],
     completedChapterIds: [],
+    villageMastery: {},
     ...overrides,
   }
 }

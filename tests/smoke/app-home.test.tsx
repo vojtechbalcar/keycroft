@@ -88,6 +88,7 @@ describe('AppHomePage', () => {
           },
         ],
         completedChapterIds: ['ch01-arrival'],
+        villageMastery: {},
       },
       setProgress: vi.fn(),
       signedIn: false,
