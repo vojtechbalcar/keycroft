@@ -1,11 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-
-const stats = [
-  { label: 'Community Story', value: '42,901', desc: 'Harvests Completed' },
-  { label: 'Village Tier', value: '104', desc: 'Avg Words Per Minute' },
-  { label: 'Total Scribes', value: '1,284', desc: 'Online Scribes' },
-]
+import { HeroTypingDemo } from '@/components/marketing/HeroTypingDemo'
 
 const tools = [
   {
@@ -94,33 +89,32 @@ export default function MarketingHomePage() {
 
       {/* ── Hero ── */}
       <section
-        className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden text-center"
+        className="relative flex min-h-[92vh] flex-col overflow-hidden"
         style={{
           backgroundImage: 'url(/village-bg.png)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center 30%',
-          backgroundColor: '#1e3d22',
+          backgroundPosition: 'center 25%',
+          backgroundColor: '#0e1f10',
         }}
       >
-        {/* Dark overlay */}
+        {/* Overlay — lighter at top so village shows, darker toward bottom where text lives */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              'linear-gradient(to bottom, rgba(20,38,20,0.55) 0%, rgba(14,26,14,0.68) 50%, rgba(14,26,14,0.88) 85%, #f4efe4 100%)',
+              'linear-gradient(to bottom, rgba(10,20,10,0.25) 0%, rgba(10,20,10,0.45) 40%, rgba(8,16,8,0.82) 70%, rgba(8,16,8,0.96) 100%)',
           }}
         />
 
-        {/* Sparkle decorations */}
+        {/* Gold sparkles */}
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           {[
-            { top: '12%', left: '18%', size: 3 },
-            { top: '8%', left: '75%', size: 2.5 },
-            { top: '22%', left: '82%', size: 2 },
-            { top: '18%', left: '12%', size: 2 },
-            { top: '30%', left: '88%', size: 1.5 },
-            { top: '6%', left: '45%', size: 2 },
-            { top: '35%', left: '8%', size: 1.5 },
+            { top: '10%', left: '14%', size: 3 },
+            { top: '6%',  left: '72%', size: 2.5 },
+            { top: '20%', left: '84%', size: 2 },
+            { top: '15%', left: '8%',  size: 2 },
+            { top: '28%', left: '90%', size: 1.5 },
+            { top: '5%',  left: '50%', size: 2 },
           ].map((s, i) => (
             <div
               key={i}
@@ -130,104 +124,88 @@ export default function MarketingHomePage() {
                 left: s.left,
                 width: s.size * 2,
                 height: s.size * 2,
-                background: 'radial-gradient(circle, rgba(212,168,80,0.8), transparent 70%)',
-                boxShadow: `0 0 ${s.size * 4}px rgba(212,168,80,0.4)`,
+                background: 'radial-gradient(circle, rgba(212,168,80,0.9), transparent 70%)',
+                boxShadow: `0 0 ${s.size * 5}px rgba(212,168,80,0.35)`,
               }}
             />
           ))}
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center gap-5 px-6">
+        {/* Content — pushed toward bottom half where it's darker */}
+        <div className="relative z-10 mt-auto flex flex-col items-center gap-6 px-6 pb-0 pt-[46vh] text-center">
+
+          {/* Season badge */}
+          <div
+            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em]"
+            style={{
+              background: 'rgba(212,168,80,0.12)',
+              border: '1px solid rgba(212,168,80,0.35)',
+              color: '#d4a850',
+            }}
+          >
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ background: '#d4a850' }}
+            />
+            Season 01: The Sprouting
+          </div>
+
+          {/* Headline */}
           <h1
-            className="max-w-3xl text-[clamp(2.4rem,6vw,4.8rem)] font-bold uppercase leading-[1.05] tracking-[0.03em] text-white"
-            style={{ textShadow: '0 4px 40px rgba(0,0,0,0.5)' }}
+            className="max-w-3xl text-[clamp(3rem,7.5vw,6rem)] font-black uppercase leading-[0.95] tracking-[0.01em] text-white"
+            style={{ textShadow: '0 2px 40px rgba(0,0,0,0.7)' }}
           >
             The Digital
             <br />
             Homestead
           </h1>
 
+          {/* Subhead */}
           <p
-            className="max-w-lg text-base leading-7"
-            style={{ color: 'rgba(255,255,255,0.72)' }}
+            className="max-w-md text-sm leading-7"
+            style={{ color: 'rgba(255,255,255,0.55)' }}
           >
-            Cultivate your typing skills to expand your artisanal
-            village. Every word is a brick, every sentence a harvest.
+            Every keystroke builds your village. Type to forge new
+            structures, unlock rare crafts, and grow your legacy.
           </p>
 
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/play"
-              className="rounded-full px-7 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-              style={{
-                background: '#4a8c3a',
-                boxShadow: '0 4px 24px rgba(74,140,58,0.4)',
-              }}
-            >
-              Start Your Harvest
-            </Link>
-            <Link
-              href="/home"
-              className="rounded-full border px-7 py-3 text-sm font-semibold transition hover:bg-white/10"
-              style={{
-                borderColor: 'rgba(255,255,255,0.3)',
-                color: 'rgba(255,255,255,0.8)',
-              }}
-            >
-              View the Map
-            </Link>
-          </div>
-
-          {/* Play / video button */}
-          <button
-            className="mt-4 flex items-center gap-2 transition hover:opacity-80"
-            style={{ color: 'rgba(255,255,255,0.45)' }}
-          >
-            <span
-              className="flex h-8 w-8 items-center justify-center rounded-full text-xs"
-              style={{ border: '1px solid rgba(255,255,255,0.3)' }}
-            >
-              ▶
-            </span>
-            <span className="text-xs uppercase tracking-widest">
-              Season video harvest
-            </span>
-          </button>
+          {/* Live typing demo */}
+          <HeroTypingDemo />
         </div>
-      </section>
 
-      {/* ── Stats ── */}
-      <section style={{ background: '#f4efe4' }} className="px-6 py-12 md:px-8">
-        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-5 md:grid-cols-3">
-          {stats.map((s) => (
+        {/* ── Stats bar ── pinned to bottom of hero */}
+        <div
+          className="relative z-10 mt-8 grid grid-cols-2 gap-px md:grid-cols-4"
+          style={{ background: 'rgba(212,168,80,0.18)' }}
+        >
+          {[
+            { value: '42,901', label: 'Harvests Today' },
+            { value: '104 WPM', label: 'Global Average' },
+            { value: '1.2M', label: 'Words Planted' },
+            { value: '842', label: 'Active Villages' },
+          ].map((s) => (
             <div
               key={s.label}
-              className="rounded-xl p-6 text-center"
-              style={{
-                border: '1px solid #c8b890',
-                background: '#faf7f0',
-              }}
+              className="flex flex-col items-center gap-0.5 px-6 py-4"
+              style={{ background: 'rgba(8,18,8,0.88)' }}
             >
-              <p
-                className="text-[10px] uppercase tracking-[0.25em]"
-                style={{ color: '#8a7a5a' }}
-              >
-                {s.label}
-              </p>
-              <p
-                className="mt-2 text-3xl font-bold"
-                style={{ color: '#1c2e1e' }}
+              <span
+                className="text-xl font-black tabular-nums"
+                style={{ color: '#d4a850' }}
               >
                 {s.value}
-              </p>
-              <p className="mt-1 text-xs" style={{ color: '#6a7a5a' }}>
-                {s.desc}
-              </p>
+              </span>
+              <span
+                className="text-[9px] uppercase tracking-[0.22em]"
+                style={{ color: 'rgba(255,255,255,0.4)' }}
+              >
+                {s.label}
+              </span>
             </div>
           ))}
         </div>
       </section>
+
 
       {/* ── Tools of the Trade ── */}
       <section style={{ background: '#f4efe4' }} className="px-6 pb-16 pt-8 md:px-8">
