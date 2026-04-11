@@ -1,8 +1,8 @@
-import type { VillageDefinition } from '@/lib/world/village-definitions'
+import type { VillageDefinition, VillageId } from '@/lib/world/village-definitions'
 import { MasteryBar } from './mastery-bar'
 
 // Per-village building sets — each inner array is one milestone tier
-const VILLAGE_BUILDINGS: Record<string, string[][]> = {
+const VILLAGE_BUILDINGS: Record<VillageId, string[][]> = {
   'meadow-farm':   [['🌾', '🌾'], ['🏚️', '🌾', '🌾'], ['🌾', '🏠', '🌾', '🌽'], ['🌾', '🏡', '🌾', '🌽', '🐄']],
   'fishing-docks': [['🌊', '🌊'], ['⛵', '🌊', '🌊'], ['⛵', '🏠', '🐟', '🌊'], ['⚓', '🏠', '⛵', '🐟', '🦭']],
   'mountain-mine': [['⛰️', '⛰️'], ['⛏️', '⛰️', '⛰️'], ['⛏️', '🏚️', '⛰️', '🪨'], ['⛏️', '🏠', '🔥', '⛰️', '🪨']],
@@ -111,7 +111,7 @@ export function VillageScene({ definition, mastery }: VillageSceneProps) {
       >
         {buildings.map((emoji, i) => (
           <div
-            key={i}
+            key={`${definition.id}-${tier}-${i}`}
             style={{
               fontSize: i % 2 === 0 ? '2.4rem' : '3rem',
               lineHeight: 1,

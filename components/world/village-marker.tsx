@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import type { VillageProjection } from '@/lib/world/project-world'
+import type { VillageProjection, VillageState } from '@/lib/world/project-world'
 import { MasteryBar } from './mastery-bar'
 
-const STATE_ICONS: Record<string, string> = {
+const STATE_ICONS: Record<VillageState, string> = {
   locked: '🔒',
   active: '⚡',
   flourishing: '🌿',

@@ -1,4 +1,5 @@
 import type { PlacementResult } from '@/lib/placement/assess'
+import { applyMasteryGain } from '@/lib/world/mastery-rules'
 import { defaultPhaseId, type PhaseId } from '@/lib/placement/phase-definitions'
 import {
   createPlacementCompletedEvent,
@@ -100,7 +101,7 @@ export function recordVillageMasteryGain(
   gain: number,
 ): GuestProgress {
   const current = progress.villageMastery[villageId] ?? 0
-  const next = Math.min(100, current + gain)
+  const next = applyMasteryGain(current, gain)
   return {
     ...progress,
     villageMastery: {

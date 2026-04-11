@@ -90,11 +90,11 @@ export default function VillagePage({ params }: Props) {
   function handleSessionComplete(session: TypingSessionState) {
     const metrics = calculateSessionMetrics(session)
     const gained = computeMasteryGain({ accuracy: metrics.accuracy })
-    const prevMastery = villageMastery
-    const newMastery = applyMasteryGain(prevMastery, gained)
 
     const storage = window.localStorage
     const current = readGuestProgress(storage)
+    const prevMastery = current.villageMastery[villageId as VillageId] ?? 0  // fresh value
+    const newMastery = applyMasteryGain(prevMastery, gained)
     const updated = recordVillageMasteryGain(current, villageId as VillageId, gained)
     saveGuestProgress(storage, updated)
     setProgress(updated)
