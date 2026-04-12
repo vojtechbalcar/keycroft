@@ -5,8 +5,8 @@ import {
   useEffect,
   useRef,
   useState,
-  type KeyboardEvent,
   type ClipboardEvent,
+  type KeyboardEvent,
 } from 'react'
 
 import { normalizeTypingKey } from '@/lib/typing/key-events'
@@ -19,50 +19,147 @@ import {
   type TypingSessionState,
 } from '@/lib/typing/text-runner'
 
+const KB_ROWS = [
+  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'],
+  ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
+]
+
+function KeyboardViz({ keyFocus }: { keyFocus?: string[] }) {
+  const focus = new Set((keyFocus ?? []).map((key) => key.toLowerCase()))
+
+  return (
+    <div className="flex select-none flex-col items-center gap-1.5">
+      {KB_ROWS.map((row, rowIndex) => (
+        <div
+          key={rowIndex}
+          className="flex gap-1"
+          style={{
+            marginLeft: rowIndex === 1 ? 14 : rowIndex === 2 ? 28 : 0,
+          }}
+        >
+          {row.map((key) => {
+            const active = focus.size === 0 || focus.has(key)
+
+            return (
+              <div
+                key={key}
+                className="flex h-8 w-8 items-center justify-center rounded-[10px] border text-[0.62rem] font-semibold transition-all"
+                style={{
+                  border: active
+                    ? '1px solid rgba(74,140,58,0.36)'
+                    : '1px solid rgba(108,94,72,0.18)',
+                  background: active
+                    ? 'rgba(238,245,229,0.98)'
+                    : 'rgba(255,250,240,0.55)',
+                  color: active
+                    ? 'var(--kc-accent-on-surface)'
+                    : 'rgba(107,94,72,0.55)',
+                  boxShadow: active ? '0 10px 18px rgba(74,140,58,0.10)' : 'none',
+                }}
+              >
+                {key.toUpperCase()}
+              </div>
+            )
+          })}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function StatPill({
+  icon,
+  value,
+  sub,
+}: {
+  icon: string
+  value: string
+  sub?: string
+}) {
+  return (
+    <div className="flex items-center gap-2 rounded-full border border-[rgba(107,94,72,0.16)] bg-[rgba(255,250,240,0.72)] px-4 py-2 shadow-[0_8px_20px_rgba(58,45,30,0.05)]">
+      <span className="text-sm">{icon}</span>
+      <span className="text-[0.82rem] font-semibold text-[var(--kc-on-surface)]">
+        {value}
+      </span>
+      {sub && (
+        <span className="text-[0.58rem] uppercase tracking-[0.18em] text-[var(--kc-on-surface-muted)]">
+          {sub}
+        </span>
+      )}
+    </div>
+  )
+}
+
+function formatElapsed(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000)
+  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0')
+  const seconds = (totalSeconds % 60).toString().padStart(2, '0')
+
+  return `${minutes}:${seconds}`
+}
+
 type TypingSurfaceProps = {
   prompt: PracticeText
+  keyFocus?: string[]
   onComplete: (session: TypingSessionState) => void
 }
 
-function getCharStyle(status: string, isCursor: boolean): React.CSSProperties {
-  if (status === 'correct')   return { color: '#e6edf3' }
-  if (status === 'incorrect') return { color: '#f85149', textDecoration: 'underline', textDecorationColor: '#f85149' }
-  if (isCursor)               return { color: 'rgba(230,237,243,0.5)' }
-  return { color: 'rgba(230,237,243,0.22)' }
-}
-
-export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
+export function TypingSurface({
+  prompt,
+  keyFocus,
+  onComplete,
+}: TypingSurfaceProps) {
   const [session, setSession] = useState(() => createTypingSession(prompt.text))
-  const [now, setNow] = useState(0)
+  const [now, setNow] = useState(Date.now())
   const [focused, setFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // auto-focus on mount
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
 
   useEffect(() => {
-    if (session.startedAt === null || session.isComplete) return
-    const id = window.setInterval(() => setNow(Date.now()), 100)
-    return () => window.clearInterval(id)
+    if (session.startedAt === null || session.isComplete) {
+      return
+    }
+
+    const intervalId = window.setInterval(() => {
+      setNow(Date.now())
+    }, 250)
+
+    return () => window.clearInterval(intervalId)
   }, [session.startedAt, session.isComplete])
 
-  const characterStatuses = getCharacterStatuses(session)
-  const cursorIndex       = session.inputValue.length
-  const progressPercent   = Math.round((session.inputValue.length / prompt.text.length) * 100)
-  const currentErrors     = getCurrentErrorCount(session)
-
-  void now
-  void currentErrors
+  const characters = getCharacterStatuses(session)
+  const cursorIndex = session.inputValue.length
+  const errors = getCurrentErrorCount(session)
+  const totalTyped = session.inputValue.length
+  const correctTyped = totalTyped - errors
+  const accuracy =
+    totalTyped === 0 ? 100 : Math.round((correctTyped / totalTyped) * 100)
+  const elapsedMs = session.startedAt ? now - session.startedAt : 0
+  const elapsedMinutes = elapsedMs / 60000
+  const wpm =
+    elapsedMinutes > 0 ? Math.round((correctTyped / 5) / elapsedMinutes) : 0
+  const progress = Math.round((cursorIndex / prompt.text.length) * 100)
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     const action = normalizeTypingKey(event)
-    if (action.type === 'ignore') return
+
+    if (action.type === 'ignore') {
+      return
+    }
+
     event.preventDefault()
-    const next = applyTypingAction(session, action, Date.now())
-    setSession(next)
-    if (next.isComplete) onComplete(next)
+
+    const nextSession = applyTypingAction(session, action, Date.now())
+    setSession(nextSession)
+
+    if (nextSession.isComplete) {
+      onComplete(nextSession)
+    }
   }
 
   function handlePaste(event: ClipboardEvent<HTMLInputElement>) {
@@ -71,95 +168,100 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
 
   return (
     <section
-      style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
+      className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]"
       onClick={() => inputRef.current?.focus()}
     >
-      {/* Hidden real input */}
       <input
         aria-label="Typing input"
         autoFocus
         className="sr-only"
+        onBlur={() => setFocused(false)}
         onChange={() => undefined}
+        onFocus={() => setFocused(true)}
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
         readOnly
         ref={inputRef}
         value=""
       />
 
-      {/* ── Text display ── */}
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '2.5rem 2rem',
-          cursor: 'text',
-        }}
-      >
-        {/* Phrase */}
-        <div
-          style={{
-            background: 'rgba(22,27,34,0.7)',
-            border: '1px solid #30363d',
-            borderRadius: 8,
-            padding: '2rem 2.5rem',
-            maxWidth: 680,
-            width: '100%',
-          }}
-        >
+      <article className="rounded-[36px] border border-[var(--kc-line-light)] bg-[linear-gradient(180deg,rgba(255,250,240,0.97)_0%,rgba(244,236,219,0.97)_100%)] p-6 shadow-[0_24px_60px_rgba(58,45,30,0.08)] md:p-8">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-[0.22em] text-[var(--kc-on-surface-muted)]">
+              {prompt.label}
+            </p>
+            <h1 className="text-[clamp(1.8rem,3vw,2.6rem)] leading-none text-[var(--kc-on-surface)]">
+              {prompt.focus}
+            </h1>
+            <p className="max-w-xl text-sm leading-7 text-[var(--kc-on-surface-muted)]">
+              Let the line stay airy and even. Backspace is allowed, but the
+              real gain comes from keeping corrections low.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2.5">
+            <StatPill icon="⚡" value={String(wpm)} sub="WPM" />
+            <StatPill icon="🎯" value={`${accuracy}%`} sub="ACC" />
+            <StatPill icon="⏱" value={formatElapsed(elapsedMs)} />
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-[32px] border border-[rgba(107,94,72,0.16)] bg-[rgba(255,250,240,0.72)] px-5 py-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:px-7 md:py-8">
           <div
-            style={{
-              fontFamily: 'var(--font-mono, monospace)',
-              fontSize: '1.35rem',
-              lineHeight: 1.8,
-              letterSpacing: '0.02em',
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'flex-end',
-              gap: '0 0',
-              userSelect: 'none',
-            }}
+            className="flex flex-wrap text-[clamp(1.2rem,2vw,1.65rem)] leading-[1.9] tracking-[0.01em] text-[var(--kc-on-surface)] select-none"
             data-testid="typing-line"
           >
-            {characterStatuses.map((ch, i) => (
-              <Fragment key={i}>
-                {!session.isComplete && i === cursorIndex && (
+            {characters.map((character, index) => {
+              const isCursor = !session.isComplete && index === cursorIndex
+              const color =
+                character.status === 'correct'
+                  ? 'var(--kc-on-surface)'
+                  : character.status === 'incorrect'
+                    ? 'var(--kc-error)'
+                    : isCursor
+                      ? 'rgba(28,46,30,0.45)'
+                      : 'rgba(28,46,30,0.28)'
+
+              return (
+                <Fragment key={index}>
+                  {isCursor && (
+                    <span
+                      className="mr-px inline-block h-[1em] w-0.5 shrink-0 rounded-full"
+                      style={{
+                        background: 'var(--kc-accent)',
+                        animation: focused
+                          ? 'kc-blink 0.85s ease-in-out infinite'
+                          : 'none',
+                        opacity: focused ? 1 : 0.5,
+                      }}
+                    />
+                  )}
                   <span
-                    aria-hidden
+                    data-status={character.status}
                     style={{
-                      display: 'inline-block',
-                      width: 2,
-                      height: '1.1em',
-                      background: '#c49a3a',
-                      verticalAlign: 'text-bottom',
-                      marginRight: 1,
-                      borderRadius: 1,
-                      flexShrink: 0,
-                      animation: focused ? 'kc-blink 0.85s ease-in-out infinite' : 'none',
-                      opacity: focused ? 1 : 0.4,
+                      color,
+                      textDecorationLine:
+                        character.status === 'incorrect' ? 'underline' : 'none',
+                      textDecorationColor:
+                        character.status === 'incorrect'
+                          ? 'var(--kc-error)'
+                          : 'transparent',
+                      textDecorationThickness:
+                        character.status === 'incorrect' ? '2px' : '0px',
                     }}
-                  />
-                )}
-                <span style={getCharStyle(ch.status, i === cursorIndex)}>
-                  {ch.expected === ' ' ? '\u00A0' : ch.expected}
-                </span>
-              </Fragment>
-            ))}
-            {!session.isComplete && cursorIndex >= characterStatuses.length && (
+                  >
+                    {character.expected === ' ' ? '\u00A0' : character.expected}
+                  </span>
+                </Fragment>
+              )
+            })}
+
+            {!session.isComplete && cursorIndex >= characters.length && (
               <span
-                aria-hidden
+                className="inline-block h-[1em] w-0.5 rounded-full"
                 style={{
-                  display: 'inline-block',
-                  width: 2,
-                  height: '1.1em',
-                  background: '#c49a3a',
-                  verticalAlign: 'text-bottom',
-                  borderRadius: 1,
+                  background: 'var(--kc-accent)',
                   animation: 'kc-blink 0.85s ease-in-out infinite',
                 }}
               />
@@ -167,53 +269,56 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
           </div>
         </div>
 
-        {/* Click hint — shown when not yet started */}
-        {session.startedAt === null && (
-          <p style={{
-            marginTop: '1.25rem',
-            fontSize: '0.72rem',
-            color: 'rgba(125,133,144,0.7)',
-            fontFamily: 'var(--font-mono, monospace)',
-            letterSpacing: '0.06em',
-          }}>
-            Click anywhere and start typing...
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--kc-on-surface-muted)]">
+          <p className="leading-6">
+            {session.startedAt === null
+              ? 'Click into the lesson and start with the first key.'
+              : 'Keep a gentle pace. Clean rhythm beats rushing.'}
           </p>
-        )}
-      </div>
+          <p className="rounded-full bg-[rgba(74,140,58,0.1)] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[var(--kc-accent-on-surface)]">
+            {progress}% through the line
+          </p>
+        </div>
+      </article>
 
-      {/* ── Progress bar ── */}
-      <div style={{
-        padding: '0.75rem 1.5rem 1rem',
-        borderTop: '1px solid #21262d',
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '0.4rem',
-        }}>
-          <span style={{ fontSize: '0.62rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#7d8590', fontFamily: 'var(--font-mono, monospace)' }}>
-            Mastery
-          </span>
-          <span style={{ fontSize: '0.62rem', color: '#7d8590', fontFamily: 'var(--font-mono, monospace)' }}>
-            {progressPercent} / 100 xp
-          </span>
+      <aside className="flex h-full flex-col gap-4 rounded-[32px] border border-[var(--kc-line-light)] bg-[rgba(249,244,234,0.92)] p-5 shadow-[0_24px_60px_rgba(58,45,30,0.06)]">
+        <div className="space-y-1">
+          <p className="text-xs uppercase tracking-[0.22em] text-[var(--kc-on-surface-muted)]">
+            Lesson board
+          </p>
+          <h2 className="text-2xl text-[var(--kc-on-surface)]">Key map</h2>
+          <p className="text-sm leading-6 text-[var(--kc-on-surface-muted)]">
+            The highlighted keys show the movement this lesson is trying to
+            teach your hands.
+          </p>
         </div>
-        <div style={{
-          height: 4,
-          background: '#21262d',
-          borderRadius: 2,
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            height: '100%',
-            width: `${progressPercent}%`,
-            background: '#c49a3a',
-            borderRadius: 2,
-            transition: 'width 150ms ease',
-          }} />
+
+        <div className="rounded-[24px] border border-[rgba(107,94,72,0.14)] bg-[rgba(255,250,240,0.86)] p-4">
+          <KeyboardViz keyFocus={keyFocus} />
         </div>
-      </div>
+
+        <div className="rounded-[24px] border border-[rgba(107,94,72,0.14)] bg-[rgba(255,250,240,0.72)] p-4">
+          <p className="text-xs uppercase tracking-[0.18em] text-[var(--kc-on-surface-muted)]">
+            Live feel
+          </p>
+          <dl className="mt-3 space-y-3 text-sm text-[var(--kc-on-surface)]">
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-[var(--kc-on-surface-muted)]">Progress</dt>
+              <dd>
+                {cursorIndex}/{prompt.text.length}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-[var(--kc-on-surface-muted)]">Open errors</dt>
+              <dd>{errors}</dd>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-[var(--kc-on-surface-muted)]">Focus state</dt>
+              <dd>{focused ? 'Listening' : 'Click to refocus'}</dd>
+            </div>
+          </dl>
+        </div>
+      </aside>
     </section>
   )
 }

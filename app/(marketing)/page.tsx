@@ -122,7 +122,7 @@ export default function MarketingHomePage() {
         textAlign: 'center',
         position: 'relative',
         overflow: 'hidden',
-        backgroundImage: 'url(/village-bg.png)',
+        backgroundImage: 'url(/images/hero-background-image.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center 30%',
         backgroundColor: '#080e0a',
@@ -189,7 +189,7 @@ export default function MarketingHomePage() {
             worlds as you progress.
           </p>
 
-          <Link href="/play" style={{
+          <Link href="/world" style={{
             marginTop: '0.4rem',
             display: 'inline-block',
             padding: '0.9rem 2.8rem',
@@ -206,7 +206,7 @@ export default function MarketingHomePage() {
             Begin Journey
           </Link>
 
-          <EnterKeyStart href="/play" />
+          <EnterKeyStart href="/world" />
 
           {/* Scroll cue into next section */}
           <div style={{ marginTop: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
@@ -302,7 +302,7 @@ export default function MarketingHomePage() {
 
                 {/* Status */}
                 {v.open ? (
-                  <Link href="/play" style={{
+                  <Link href="/world" style={{
                     fontSize: '0.65rem',
                     letterSpacing: '0.14em',
                     textTransform: 'uppercase',

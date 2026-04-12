@@ -16,7 +16,7 @@ describe('TypingSurface', () => {
     render(<TypingSurface prompt={prompt} onComplete={() => undefined} />)
 
     expect(screen.getByText(/village path/i)).toBeInTheDocument()
-    expect(screen.getByText(/western path/i)).toBeInTheDocument()
+    expect(screen.getByText(/light rhythm/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/typing input/i)).toBeInTheDocument()
   })
 
