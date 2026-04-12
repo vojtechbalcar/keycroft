@@ -7,6 +7,14 @@ import { WorldMap } from '@/components/world/world-map'
 import { useResolvedProgress } from '@/lib/storage/use-resolved-progress'
 import { projectWorld } from '@/lib/world/project-world'
 import { getVillageDefinition } from '@/lib/world/village-definitions'
+import { villageDefinitions } from '@/lib/world/village-definitions'
+import type { VillageId } from '@/lib/world/village-definitions'
+
+const BG       = '#0d1117'
+const BORDER_S = '#21262d'
+const TEXT     = '#e6edf3'
+const MUTED    = '#7d8590'
+const GOLD     = '#c49a3a'
 
 export default function WorldPage() {
   const router = useRouter()
@@ -14,115 +22,125 @@ export default function WorldPage() {
 
   useEffect(() => {
     if (progress === null) return
-    if (progress.placement === null) {
-      router.replace('/onboarding')
-    }
+    if (progress.placement === null) router.replace('/onboarding')
   }, [progress, router])
 
   if (!progress) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <p style={{ color: 'var(--kc-muted)' }}>Loading your world…</p>
+      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', background: BG }}>
+        <p style={{ color: MUTED, fontFamily: 'var(--font-mono, monospace)' }}>Loading your world…</p>
       </div>
     )
   }
 
-  const worldState = projectWorld(progress)
-  const currentDef = getVillageDefinition(worldState.currentVillageId)
+  const worldState    = projectWorld(progress)
+  const currentDef    = getVillageDefinition(worldState.currentVillageId)
+  const unlockedCount = villageDefinitions.filter(
+    (v) => (progress.villageMastery[v.id as VillageId] ?? 0) > 0
+  ).length
 
   return (
-    <div
-      style={{
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      background: BG,
+      fontFamily: 'var(--font-mono, monospace)',
+      color: TEXT,
+    }}>
+
+      {/* ── Top bar ─────────────────────────────────────────────── */}
+      <header style={{
+        flexShrink: 0,
         display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        background: 'var(--kc-background)',
-      }}
-    >
-      {/* Header */}
-      <header
-        style={{
-          padding: '1.25rem 1.5rem',
-          borderBottom: '1px solid var(--kc-line)',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0.65rem 1.25rem',
+        borderBottom: `1px solid ${BORDER_S}`,
+        background: 'rgba(13,17,23,0.95)',
+        backdropFilter: 'blur(6px)',
+      }}>
+        <Link href="/home" style={{
+          color: MUTED,
+          fontSize: '0.72rem',
+          textDecoration: 'none',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          flexShrink: 0,
-        }}
-      >
-        <div>
-          <p
-            style={{
-              fontSize: '0.65rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.2em',
-              color: 'var(--kc-muted)',
-              marginBottom: 4,
-            }}
-          >
+          gap: 5,
+        }}>
+          ← Back
+        </Link>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+          <span style={{ fontSize: '0.8rem' }}>⊙</span>
+          <span style={{
+            fontFamily: 'var(--font-display, monospace)',
+            fontSize: '1.2rem',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: TEXT,
+          }}>
             World Map
-          </p>
-          <h1 style={{ color: '#f4efe4', fontWeight: 700, fontSize: '1.25rem', margin: 0 }}>
-            The Keycroft World
-          </h1>
+          </span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div
-            style={{
-              background: 'rgba(245,200,66,0.1)',
-              border: '1px solid rgba(245,200,66,0.3)',
-              borderRadius: 8,
-              padding: '6px 12px',
-              fontSize: '0.75rem',
-              color: '#f5c842',
-            }}
-          >
-            {worldState.totalMastery}% world mastery
-          </div>
+
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 5,
+          fontSize: '0.68rem',
+          color: GOLD,
+          letterSpacing: '0.06em',
+        }}>
+          <span>☆</span>
+          <span>{unlockedCount} / {villageDefinitions.length} villages</span>
         </div>
       </header>
 
-      {/* Map */}
-      <div style={{ flex: 1, padding: '1.5rem', minHeight: 0 }}>
+      {/* ── Map ─────────────────────────────────────────────────── */}
+      <div style={{ flex: 1, padding: '1rem', minHeight: 0 }}>
         <WorldMap worldState={worldState} />
       </div>
 
-      {/* Bottom bar — current village CTA */}
-      <div
-        style={{
-          padding: '1rem 1.5rem',
-          borderTop: '1px solid var(--kc-line)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          background: 'rgba(0,0,0,0.2)',
-          flexShrink: 0,
-        }}
-      >
+      {/* ── Bottom bar — current village CTA ────────────────────── */}
+      <div style={{
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0.75rem 1.25rem',
+        borderTop: `1px solid ${BORDER_S}`,
+        background: 'rgba(13,17,23,0.95)',
+        backdropFilter: 'blur(6px)',
+      }}>
         <div>
-          <p style={{ color: 'var(--kc-muted)', fontSize: '0.7rem', margin: 0, marginBottom: 2 }}>
+          <p style={{ fontSize: '0.6rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: MUTED, margin: 0, marginBottom: 3 }}>
             Current destination
           </p>
-          <p style={{ color: '#f4efe4', fontWeight: 700, margin: 0 }}>
+          <p style={{ fontFamily: 'var(--font-display, monospace)', fontSize: '1.15rem', color: TEXT, margin: 0, letterSpacing: '0.06em' }}>
             {currentDef.emoji} {currentDef.name}
           </p>
-          <p style={{ color: 'var(--kc-muted)', fontSize: '0.75rem', margin: 0, marginTop: 2 }}>
+          <p style={{ fontSize: '0.62rem', color: MUTED, margin: '2px 0 0' }}>
             {currentDef.tagline}
           </p>
         </div>
+
         <Link
           href={`/world/${worldState.currentVillageId}`}
           style={{
-            background: 'var(--kc-accent)',
-            color: '#fff',
-            fontWeight: 700,
+            display: 'inline-block',
             padding: '0.6rem 1.5rem',
-            borderRadius: 8,
+            background: GOLD,
+            color: BG,
+            fontSize: '0.72rem',
+            fontWeight: 700,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
             textDecoration: 'none',
-            fontSize: '0.9rem',
+            borderRadius: 4,
           }}
         >
-          Enter village →
+          Enter Village →
         </Link>
       </div>
     </div>

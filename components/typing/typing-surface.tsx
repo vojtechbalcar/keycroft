@@ -24,67 +24,45 @@ type TypingSurfaceProps = {
   onComplete: (session: TypingSessionState) => void
 }
 
-function getCharacterClassName(
-  status: string,
-  isCursorPosition: boolean,
-): string {
-  if (status === 'correct') {
-    return 'text-[var(--kc-on-surface)]'
-  }
-  if (status === 'incorrect') {
-    return 'rounded-sm bg-[var(--kc-error-bg)] text-[var(--kc-error)]'
-  }
-  if (isCursorPosition) {
-    return 'rounded-sm bg-[rgba(74,140,58,0.10)] text-[var(--kc-on-surface)]'
-  }
-  return 'text-[var(--kc-on-surface-faint)]'
+function getCharStyle(status: string, isCursor: boolean): React.CSSProperties {
+  if (status === 'correct')   return { color: '#e6edf3' }
+  if (status === 'incorrect') return { color: '#f85149', textDecoration: 'underline', textDecorationColor: '#f85149' }
+  if (isCursor)               return { color: 'rgba(230,237,243,0.5)' }
+  return { color: 'rgba(230,237,243,0.22)' }
 }
 
 export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
   const [session, setSession] = useState(() => createTypingSession(prompt.text))
   const [now, setNow] = useState(0)
+  const [focused, setFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  // auto-focus on mount
   useEffect(() => {
-    if (session.startedAt === null || session.isComplete) {
-      return
-    }
+    inputRef.current?.focus()
+  }, [])
 
-    const intervalId = window.setInterval(() => {
-      setNow(Date.now())
-    }, 100)
-
-    return () => {
-      window.clearInterval(intervalId)
-    }
+  useEffect(() => {
+    if (session.startedAt === null || session.isComplete) return
+    const id = window.setInterval(() => setNow(Date.now()), 100)
+    return () => window.clearInterval(id)
   }, [session.startedAt, session.isComplete])
 
   const characterStatuses = getCharacterStatuses(session)
-  const cursorIndex = session.inputValue.length
-  const progressPercent = Math.round(
-    (session.inputValue.length / prompt.text.length) * 100,
-  )
-  const currentErrors = getCurrentErrorCount(session)
+  const cursorIndex       = session.inputValue.length
+  const progressPercent   = Math.round((session.inputValue.length / prompt.text.length) * 100)
+  const currentErrors     = getCurrentErrorCount(session)
 
   void now
-  void progressPercent
   void currentErrors
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     const action = normalizeTypingKey(event)
-
-    if (action.type === 'ignore') {
-      return
-    }
-
+    if (action.type === 'ignore') return
     event.preventDefault()
-
-    const nextSession = applyTypingAction(session, action, Date.now())
-    setSession(nextSession)
-
-    if (nextSession.isComplete) {
-      onComplete(nextSession)
-    }
+    const next = applyTypingAction(session, action, Date.now())
+    setSession(next)
+    if (next.isComplete) onComplete(next)
   }
 
   function handlePaste(event: ClipboardEvent<HTMLInputElement>) {
@@ -93,11 +71,10 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
 
   return (
     <section
-      className="flex flex-col"
-      onClick={() => {
-        inputRef.current?.focus()
-      }}
+      style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
+      onClick={() => inputRef.current?.focus()}
     >
+      {/* Hidden real input */}
       <input
         aria-label="Typing input"
         autoFocus
@@ -105,79 +82,136 @@ export function TypingSurface({ prompt, onComplete }: TypingSurfaceProps) {
         onChange={() => undefined}
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         readOnly
         ref={inputRef}
         value=""
       />
 
-      {/* Breadcrumb header */}
+      {/* ── Text display ── */}
       <div
-        className="flex items-center justify-between px-6 py-3"
         style={{
-          background: 'var(--kc-surface)',
-          borderBottom: '1px solid var(--kc-line-light)',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '2.5rem 2rem',
+          cursor: 'text',
         }}
       >
-        <div className="flex items-center gap-2">
-          <span
-            className="text-[10px] uppercase tracking-[0.16em]"
-            style={{ color: 'var(--kc-on-surface-muted)' }}
-          >
-            {prompt.label}
-          </span>
-          <span style={{ color: 'var(--kc-line-light)' }}>›</span>
-          <span
-            className="text-[10px] uppercase tracking-[0.16em]"
-            style={{ color: 'var(--kc-on-surface-muted)' }}
-          >
-            Western Path
-          </span>
-        </div>
-        <span
-          className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+        {/* Phrase */}
+        <div
           style={{
-            borderRadius: 'var(--kc-radius-badge)',
-            background: 'rgba(58,114,48,0.10)',
-            color: 'var(--kc-accent-on-surface)',
-            border: '1px solid rgba(58,114,48,0.18)',
+            background: 'rgba(22,27,34,0.7)',
+            border: '1px solid #30363d',
+            borderRadius: 8,
+            padding: '2rem 2.5rem',
+            maxWidth: 680,
+            width: '100%',
           }}
         >
-          Focus
-        </span>
+          <div
+            style={{
+              fontFamily: 'var(--font-mono, monospace)',
+              fontSize: '1.35rem',
+              lineHeight: 1.8,
+              letterSpacing: '0.02em',
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'flex-end',
+              gap: '0 0',
+              userSelect: 'none',
+            }}
+            data-testid="typing-line"
+          >
+            {characterStatuses.map((ch, i) => (
+              <Fragment key={i}>
+                {!session.isComplete && i === cursorIndex && (
+                  <span
+                    aria-hidden
+                    style={{
+                      display: 'inline-block',
+                      width: 2,
+                      height: '1.1em',
+                      background: '#c49a3a',
+                      verticalAlign: 'text-bottom',
+                      marginRight: 1,
+                      borderRadius: 1,
+                      flexShrink: 0,
+                      animation: focused ? 'kc-blink 0.85s ease-in-out infinite' : 'none',
+                      opacity: focused ? 1 : 0.4,
+                    }}
+                  />
+                )}
+                <span style={getCharStyle(ch.status, i === cursorIndex)}>
+                  {ch.expected === ' ' ? '\u00A0' : ch.expected}
+                </span>
+              </Fragment>
+            ))}
+            {!session.isComplete && cursorIndex >= characterStatuses.length && (
+              <span
+                aria-hidden
+                style={{
+                  display: 'inline-block',
+                  width: 2,
+                  height: '1.1em',
+                  background: '#c49a3a',
+                  verticalAlign: 'text-bottom',
+                  borderRadius: 1,
+                  animation: 'kc-blink 0.85s ease-in-out infinite',
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Click hint — shown when not yet started */}
+        {session.startedAt === null && (
+          <p style={{
+            marginTop: '1.25rem',
+            fontSize: '0.72rem',
+            color: 'rgba(125,133,144,0.7)',
+            fontFamily: 'var(--font-mono, monospace)',
+            letterSpacing: '0.06em',
+          }}>
+            Click anywhere and start typing...
+          </p>
+        )}
       </div>
 
-      {/* Typing area */}
-      <div
-        className="flex-1 px-8 py-8"
-        style={{ background: '#fff', minHeight: 200 }}
-      >
-        <div
-          className="flex flex-wrap items-end gap-x-0.5 gap-y-4 text-[1.65rem] leading-[1.7]"
-          style={{
-            fontFamily:
-              "'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif",
-          }}
-          data-testid="typing-line"
-        >
-          {characterStatuses.map((character, index) => (
-            <Fragment key={`char-${index}`}>
-              {!session.isComplete && index === cursorIndex && (
-                <span aria-hidden className="kc-cursor" />
-              )}
-              <span
-                className={getCharacterClassName(
-                  character.status,
-                  index === cursorIndex,
-                )}
-                data-status={character.status}
-              >
-                {character.expected === ' ' ? '\u00A0' : character.expected}
-              </span>
-            </Fragment>
-          ))}
-          {!session.isComplete && cursorIndex >= characterStatuses.length && (
-            <span aria-hidden className="kc-cursor" />
-          )}
+      {/* ── Progress bar ── */}
+      <div style={{
+        padding: '0.75rem 1.5rem 1rem',
+        borderTop: '1px solid #21262d',
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '0.4rem',
+        }}>
+          <span style={{ fontSize: '0.62rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#7d8590', fontFamily: 'var(--font-mono, monospace)' }}>
+            Mastery
+          </span>
+          <span style={{ fontSize: '0.62rem', color: '#7d8590', fontFamily: 'var(--font-mono, monospace)' }}>
+            {progressPercent} / 100 xp
+          </span>
+        </div>
+        <div style={{
+          height: 4,
+          background: '#21262d',
+          borderRadius: 2,
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            height: '100%',
+            width: `${progressPercent}%`,
+            background: '#c49a3a',
+            borderRadius: 2,
+            transition: 'width 150ms ease',
+          }} />
         </div>
       </div>
     </section>

@@ -28,16 +28,46 @@ import {
 import type { TypingSessionState } from '@/lib/typing/text-runner'
 
 const VILLAGE_CONTENT: Record<VillageId, VillageContent> = {
-  'meadow-farm': meadowFarm,
-  'fishing-docks': fishingDocks,
-  'mountain-mine': mountainMine,
-  'forest-watch': forestWatch,
-  'desert-market': desertMarket,
-  'volcano-forge': volcanoForge,
+  'meadow-farm':    meadowFarm,
+  'fishing-docks':  fishingDocks,
+  'mountain-mine':  mountainMine,
+  'forest-watch':   forestWatch,
+  'desert-market':  desertMarket,
+  'volcano-forge':  volcanoForge,
 }
 
-type Props = {
-  params: Promise<{ villageId: string }>
+type Props = { params: Promise<{ villageId: string }> }
+
+/* ── shared tokens ─────────────────────────────────────────────── */
+const BG       = '#0d1117'
+const BG_CARD  = '#161b22'
+const BORDER   = '#30363d'
+const BORDER_S = '#21262d'
+const TEXT     = '#e6edf3'
+const MUTED    = '#7d8590'
+const GOLD     = '#c49a3a'
+
+/* ── stat pill ─────────────────────────────────────────────────── */
+function StatPill({ icon, value, label }: { icon: string; value: string; label: string }) {
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 6,
+      background: BG_CARD,
+      border: `1px solid ${BORDER}`,
+      borderRadius: 6,
+      padding: '0.4rem 0.875rem',
+    }}>
+      <span style={{ fontSize: '0.75rem' }}>{icon}</span>
+      <span style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '0.78rem', fontWeight: 700, color: TEXT }}>
+        {value}
+      </span>
+      <span style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '0.62rem', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+        {label}
+      </span>
+    </div>
+  )
 }
 
 export default function VillagePage({ params }: Props) {
@@ -53,6 +83,7 @@ export default function VillagePage({ params }: Props) {
     newMastery: number
     prevMastery: number
   } | null>(null)
+  const [sessionKey, setSessionKey] = useState(0) // force TypingSurface remount on reset
 
   const definition = useMemo(
     () => villageDefinitions.find((v) => v.id === villageId),
@@ -61,44 +92,40 @@ export default function VillagePage({ params }: Props) {
 
   useEffect(() => {
     if (progress === null) return
-    if (progress.placement === null) {
-      router.replace('/onboarding')
-    }
+    if (progress.placement === null) router.replace('/onboarding')
   }, [progress, router])
 
   if (!definition) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <p style={{ color: 'var(--kc-muted)' }}>Village not found.</p>
+      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', background: BG }}>
+        <p style={{ color: MUTED, fontFamily: 'var(--font-mono, monospace)' }}>Village not found.</p>
       </div>
     )
   }
 
   if (!progress) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <p style={{ color: 'var(--kc-muted)' }}>Loading…</p>
+      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', background: BG }}>
+        <p style={{ color: MUTED, fontFamily: 'var(--font-mono, monospace)' }}>Loading…</p>
       </div>
     )
   }
 
   const villageMastery = progress.villageMastery[villageId as VillageId] ?? 0
-  const content = VILLAGE_CONTENT[villageId as VillageId]
-  const allLessons = [...content.lessons, content.capstone]
-  const activeLesson = allLessons[activeLessonIndex]
+  const content        = VILLAGE_CONTENT[villageId as VillageId]
+  const allLessons     = [...content.lessons, content.capstone]
+  const activeLesson   = allLessons[activeLessonIndex]
 
   function handleSessionComplete(session: TypingSessionState) {
-    const metrics = calculateSessionMetrics(session)
-    const gained = computeMasteryGain({ accuracy: metrics.accuracy })
-
-    const storage = window.localStorage
-    const current = readGuestProgress(storage)
-    const prevMastery = current.villageMastery[villageId as VillageId] ?? 0  // fresh value
-    const newMastery = applyMasteryGain(prevMastery, gained)
-    const updated = recordVillageMasteryGain(current, villageId as VillageId, gained)
+    const metrics  = calculateSessionMetrics(session)
+    const gained   = computeMasteryGain({ accuracy: metrics.accuracy })
+    const storage  = window.localStorage
+    const current  = readGuestProgress(storage)
+    const prevMastery = current.villageMastery[villageId as VillageId] ?? 0
+    const newMastery  = applyMasteryGain(prevMastery, gained)
+    const updated  = recordVillageMasteryGain(current, villageId as VillageId, gained)
     saveGuestProgress(storage, updated)
     setProgress(updated)
-
     setCompletedLessonIds((prev) => new Set([...prev, activeLesson.id]))
     setReward({ metrics, masteryGained: gained, newMastery, prevMastery })
   }
@@ -110,163 +137,165 @@ export default function VillagePage({ params }: Props) {
     }
   }
 
+  function handleReset() {
+    setReward(null)
+    setSessionKey((k) => k + 1)
+  }
+
+  const mastery = reward ? reward.newMastery : villageMastery
+
   return (
-    <div
-      style={{
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: BG, fontFamily: 'var(--font-mono, monospace)' }}>
+
+      {/* ── Top bar ─────────────────────────────────────────────── */}
+      <header style={{
+        flexShrink: 0,
         display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        background: 'var(--kc-background)',
-      }}
-    >
-      {/* Header breadcrumb */}
-      <header
-        style={{
-          padding: '0.75rem 1.5rem',
-          borderBottom: '1px solid var(--kc-line)',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0.6rem 1.25rem',
+        borderBottom: `1px solid ${BORDER_S}`,
+        background: 'rgba(13,17,23,0.95)',
+        backdropFilter: 'blur(6px)',
+      }}>
+        <Link href="/world" style={{
+          color: MUTED,
+          fontSize: '0.72rem',
+          textDecoration: 'none',
+          letterSpacing: '0.08em',
           display: 'flex',
           alignItems: 'center',
-          gap: 12,
-          flexShrink: 0,
-        }}
-      >
-        <Link
-          href="/world"
-          style={{ color: 'var(--kc-muted)', textDecoration: 'none', fontSize: '0.8rem' }}
-        >
-          ← World map
+          gap: 5,
+        }}>
+          ← Back
         </Link>
-        <span style={{ color: 'var(--kc-line)' }}>|</span>
-        <span style={{ color: '#f4efe4', fontWeight: 700 }}>
-          {definition.emoji} {definition.name}
-        </span>
-        <span style={{ color: 'var(--kc-muted)', fontSize: '0.8rem' }}>
-          — {definition.tagline}
-        </span>
-      </header>
 
-      {/* Main layout: scene left, lessons right */}
-      <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
-        {/* Village scene — 55% */}
-        <div
-          style={{
-            width: '55%',
-            padding: '1.25rem',
-            flexShrink: 0,
-            position: 'relative',
-          }}
-        >
-          <VillageScene
-            definition={definition}
-            mastery={reward ? reward.newMastery : villageMastery}
-          />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+          <span style={{ fontSize: '0.75rem' }}>⚙</span>
+          <span style={{
+            fontFamily: 'var(--font-display, monospace)',
+            fontSize: '1.2rem',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: TEXT,
+          }}>
+            {definition.name}
+          </span>
         </div>
 
-        {/* Lesson panel — 45% */}
-        <div
+        <button
+          onClick={handleReset}
           style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '1.25rem',
+            background: 'none',
+            border: 'none',
+            color: MUTED,
+            fontSize: '0.72rem',
+            cursor: 'pointer',
+            letterSpacing: '0.08em',
             display: 'flex',
-            flexDirection: 'column',
-            gap: '1rem',
-            borderLeft: '1px solid var(--kc-line)',
+            alignItems: 'center',
+            gap: 5,
+            padding: 0,
           }}
         >
-          {/* Lesson list */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {allLessons.map((lesson, idx) => {
-              const isDone = completedLessonIds.has(lesson.id)
-              const isActive = idx === activeLessonIndex && !reward
+          ↺ Reset
+        </button>
+      </header>
 
-              return (
-                <button
-                  key={lesson.id}
-                  onClick={() => {
-                    setReward(null)
-                    setActiveLessonIndex(idx)
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '8px 12px',
-                    borderRadius: 8,
-                    border: isActive
-                      ? `1px solid ${definition.palette.accent}`
-                      : '1px solid transparent',
-                    background: isActive
-                      ? `${definition.palette.accent}22`
-                      : 'rgba(255,255,255,0.04)',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    color: isDone ? 'rgba(255,255,255,0.4)' : '#f4efe4',
-                    width: '100%',
-                  }}
-                >
-                  <span style={{ fontSize: '1rem', flexShrink: 0 }}>
-                    {isDone ? '✓' : idx === allLessons.length - 1 ? '⚑' : `${idx + 1}`}
-                  </span>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{lesson.label}</div>
-                    <div
-                      style={{
-                        fontSize: '0.7rem',
-                        color: 'rgba(255,255,255,0.45)',
-                        marginTop: 1,
-                      }}
-                    >
-                      {lesson.focus}
-                    </div>
-                  </div>
-                </button>
-              )
-            })}
+      {/* ── Stat pills ──────────────────────────────────────────── */}
+      <div style={{
+        flexShrink: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '0.75rem',
+        padding: '0.75rem 1.25rem',
+        borderBottom: `1px solid ${BORDER_S}`,
+      }}>
+        <StatPill icon="⚡" value="0" label="WPM" />
+        <StatPill icon="🎯" value="100%" label="ACC" />
+        <StatPill icon="⏱" value="01:00" label="" />
+      </div>
+
+      {/* ── Main area ───────────────────────────────────────────── */}
+      <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
+
+        {/* Lesson sidebar */}
+        <aside style={{
+          width: 220,
+          flexShrink: 0,
+          borderRight: `1px solid ${BORDER_S}`,
+          overflowY: 'auto',
+          padding: '0.875rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.3rem',
+        }}>
+          <p style={{ fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: MUTED, margin: '0 0 0.5rem 0' }}>
+            Lessons
+          </p>
+          {allLessons.map((lesson, idx) => {
+            const isDone   = completedLessonIds.has(lesson.id)
+            const isActive = idx === activeLessonIndex && !reward
+            return (
+              <button
+                key={lesson.id}
+                onClick={() => { setReward(null); setActiveLessonIndex(idx) }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '0.5rem 0.625rem',
+                  borderRadius: 5,
+                  border: isActive
+                    ? `1px solid ${definition.palette.accent}`
+                    : `1px solid transparent`,
+                  background: isActive ? `${definition.palette.accent}18` : 'transparent',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  color: isDone ? MUTED : TEXT,
+                  width: '100%',
+                  fontFamily: 'var(--font-mono, monospace)',
+                }}
+              >
+                <span style={{ fontSize: '0.7rem', flexShrink: 0, color: isDone ? GOLD : MUTED }}>
+                  {isDone ? '✓' : idx === allLessons.length - 1 ? '⚑' : `${idx + 1}`}
+                </span>
+                <div>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 700 }}>{lesson.label}</div>
+                  <div style={{ fontSize: '0.62rem', color: MUTED, marginTop: 1 }}>{lesson.focus}</div>
+                </div>
+              </button>
+            )
+          })}
+
+          {/* Village scene thumbnail */}
+          <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: `1px solid ${BORDER_S}` }}>
+            <VillageScene definition={definition} mastery={mastery} />
           </div>
+        </aside>
 
-          {/* Active lesson typing surface */}
+        {/* Typing area or reward */}
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, background: BG }}>
           {!reward && activeLesson && (
-            <div style={{ flex: 1, minHeight: 0 }}>
-              <div style={{ marginBottom: 8 }}>
-                <p
-                  style={{
-                    color: '#f4efe4',
-                    fontWeight: 700,
-                    margin: 0,
-                    fontSize: '0.9rem',
-                  }}
-                >
+            <>
+              <div style={{ padding: '0.875rem 1.5rem 0', flexShrink: 0 }}>
+                <p style={{ fontFamily: 'var(--font-display, monospace)', fontSize: '1.3rem', color: TEXT, margin: 0 }}>
                   {activeLesson.label}
                 </p>
-                <p
-                  style={{
-                    color: 'rgba(255,255,255,0.5)',
-                    fontSize: '0.75rem',
-                    margin: '4px 0 0',
-                  }}
-                >
+                <p style={{ fontSize: '0.68rem', color: MUTED, margin: '3px 0 0' }}>
                   {activeLesson.goal}
                 </p>
               </div>
               <TypingSurface
+                key={`${activeLessonIndex}-${sessionKey}`}
                 prompt={activeLesson}
                 onComplete={handleSessionComplete}
               />
-            </div>
+            </>
           )}
 
-          {/* Session reward overlay */}
           {reward && (
-            <div
-              style={{
-                position: 'relative',
-                flex: 1,
-                borderRadius: 12,
-                overflow: 'hidden',
-                minHeight: 280,
-              }}
-            >
+            <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
               <SessionReward
                 definition={definition}
                 metrics={reward.metrics}
@@ -277,6 +306,32 @@ export default function VillagePage({ params }: Props) {
               />
             </div>
           )}
+        </main>
+      </div>
+
+      {/* ── Mastery bar ─────────────────────────────────────────── */}
+      <div style={{
+        flexShrink: 0,
+        padding: '0.6rem 1.25rem 0.75rem',
+        borderTop: `1px solid ${BORDER_S}`,
+        background: 'rgba(13,17,23,0.95)',
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
+          <span style={{ fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: MUTED }}>
+            Mastery
+          </span>
+          <span style={{ fontSize: '0.6rem', color: MUTED }}>
+            {mastery} / 100 xp
+          </span>
+        </div>
+        <div style={{ height: 4, background: BORDER_S, borderRadius: 2, overflow: 'hidden' }}>
+          <div style={{
+            height: '100%',
+            width: `${mastery}%`,
+            background: GOLD,
+            borderRadius: 2,
+            transition: 'width 400ms ease',
+          }} />
         </div>
       </div>
     </div>

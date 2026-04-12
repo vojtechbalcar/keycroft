@@ -1,270 +1,249 @@
 import React from 'react'
 import Link from 'next/link'
-import { HeroTypingDemo } from '@/components/marketing/HeroTypingDemo'
+import { EnterKeyStart } from '@/components/marketing/EnterKeyStart'
 
-const tools = [
+/* ── design tokens ─────────────────────────────────────────────── */
+const BG      = '#0d1117'
+const BG_CARD = '#161b22'
+const BORDER  = '#30363d'
+const BORDER_S = '#21262d'
+const TEXT    = '#e6edf3'
+const MUTED   = '#7d8590'
+const GOLD    = '#c49a3a'
+const GREEN   = '#238636'
+const GREEN_T = '#2ea043'
+
+/* ── data ──────────────────────────────────────────────────────── */
+const howItWorks = [
   {
-    letter: 'A',
-    title: 'Type to Build',
-    desc: 'Your keystrokes forge new dwellings, structures, and the quality of materials, from simple thatch to custom craftwork.',
+    numeral: 'I',
+    title: 'Learn',
+    desc: 'Start in the first village with home row keys. Build muscle memory at your own pace.',
   },
   {
-    letter: 'B',
-    title: 'Milestone Rewards',
-    desc: 'Unlock rare artifacts and unique building tools as you level up your typing proficiency. Customize your corner of Keycroft.',
+    numeral: 'II',
+    title: 'Practice',
+    desc: 'Each session earns mastery points. Track your accuracy and speed as they improve.',
   },
   {
-    letter: 'C',
-    title: 'Artisan Tools',
-    desc: 'Upgrade your skills for speed. Master over the art of code. Earn gold from daily challenges to improve your domain.',
+    numeral: 'III',
+    title: 'Explore',
+    desc: 'Unlock new villages with harder challenges — punctuation, numbers, and full sentences.',
   },
 ]
 
-const communityFeatures = [
-  {
-    icon: '📊',
-    title: 'Mutual Leaderboards',
-    desc: 'Rise through the ranks. View the top scribes in the community and see how you stack up.',
-  },
-  {
-    icon: '📜',
-    title: 'Village Blueprints',
-    desc: 'Discover new craft combinations for the most impressive of structure designs.',
-  },
-  {
-    icon: '⚔️',
-    title: 'Clan Guilds',
-    desc: 'Form a guild with friends to share resources and collaborate on building.',
-  },
-  {
-    icon: '📖',
-    title: 'Epic Sagas',
-    desc: 'Collaborative writing quests that push your speed and imagination to the limit.',
-  },
+const villages = [
+  { name: 'The Hearth',       desc: 'Home row fundamentals',   open: true  },
+  { name: 'Whispering Woods', desc: 'Common word patterns',    open: false, level: 2 },
+  { name: 'Iron Bridge',      desc: 'Speed & precision',       open: false, level: 3 },
+  { name: 'Stonepeak',        desc: 'Punctuation & symbols',   open: false, level: 4 },
+  { name: 'The Citadel',      desc: 'Master-level typing',     open: false, level: 5 },
 ]
 
+/* ── shared style helpers ──────────────────────────────────────── */
+const section = (extra?: React.CSSProperties): React.CSSProperties => ({
+  background: BG,
+  padding: '5rem 1.5rem',
+  ...extra,
+})
+
+const label: React.CSSProperties = {
+  fontSize: '0.62rem',
+  letterSpacing: '0.28em',
+  textTransform: 'uppercase',
+  color: MUTED,
+  margin: 0,
+  fontFamily: 'var(--font-mono, monospace)',
+}
+
+const displayHeading = (size = '2.4rem'): React.CSSProperties => ({
+  fontFamily: 'var(--font-display, monospace)',
+  fontSize: size,
+  color: TEXT,
+  margin: 0,
+  lineHeight: 1,
+})
+
+/* ════════════════════════════════════════════════════════════════ */
 export default function MarketingHomePage() {
   return (
-    <div style={{ background: '#f4efe4', color: '#1c2e1e' }}>
+    <div style={{ background: BG, color: TEXT, fontFamily: 'var(--font-mono, monospace)' }}>
 
-      {/* ── Nav ── */}
-      <nav
-        className="flex items-center justify-between px-8 py-3"
-        style={{
-          background: '#2d4a2e',
-          borderBottom: '3px solid #d4a850',
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <span className="text-lg" style={{ color: '#7aaa82' }}>🌿</span>
-          <span
-            className="text-sm font-bold uppercase tracking-[0.18em]"
-            style={{ color: '#f4efe4' }}
-          >
-            Keycroft
-          </span>
+      {/* ── Nav ─────────────────────────────────────────────────── */}
+      <nav style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0.9rem 1.5rem',
+        background: 'rgba(13,17,23,0.94)',
+        borderBottom: `1px solid ${BORDER_S}`,
+        backdropFilter: 'blur(8px)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+      }}>
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{
+            width: 26, height: 26,
+            border: `1px solid ${BORDER}`,
+            borderRadius: 4,
+            background: BG_CARD,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 13,
+          }}>⌨</div>
+          <span style={{
+            fontFamily: 'var(--font-display, monospace)',
+            fontSize: '1.25rem',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: TEXT,
+          }}>Keycroft</span>
         </div>
 
-        <div className="hidden items-center gap-8 md:flex">
-          {['The Village', 'Mechanics', 'Daily Harvest', 'Leaderboard'].map((item) => (
-            <Link
-              key={item}
-              href={item === 'The Village' ? '/home' : '#'}
-              className="text-sm transition hover:opacity-100"
-              style={{ color: 'rgba(244,239,228,0.7)' }}
-            >
-              {item}
-            </Link>
-          ))}
+        {/* Links */}
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+          <Link href="/home" style={{ color: MUTED, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none' }}>
+            About
+          </Link>
+          <Link href="/world" style={{ color: MUTED, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none' }}>
+            Villages
+          </Link>
         </div>
-
-        <Link
-          href="/play"
-          className="rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-90"
-          style={{ background: '#4a8c3a', color: '#fff' }}
-        >
-          Start Your Harvest
-        </Link>
       </nav>
 
-      {/* ── Hero ── */}
-      <section
-        className="relative flex min-h-[92vh] flex-col overflow-hidden"
-        style={{
-          backgroundImage: 'url(/village-bg.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center 25%',
-          backgroundColor: '#0e1f10',
-        }}
-      >
-        {/* Overlay — lighter at top so village shows, darker toward bottom where text lives */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(to bottom, rgba(10,20,10,0.25) 0%, rgba(10,20,10,0.45) 40%, rgba(8,16,8,0.82) 70%, rgba(8,16,8,0.96) 100%)',
-          }}
-        />
+      {/* ── Hero ────────────────────────────────────────────────── */}
+      <section style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        backgroundImage: 'url(/village-bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 30%',
+        backgroundColor: '#080e0a',
+      }}>
+        {/* Gradient overlay — sparse at top so village shows */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to bottom, rgba(8,14,10,0.45) 0%, rgba(8,14,10,0.7) 45%, rgba(8,14,10,0.92) 75%, #0d1117 100%)',
+        }} />
 
-        {/* Gold sparkles */}
-        <div className="pointer-events-none absolute inset-0" aria-hidden>
-          {[
-            { top: '10%', left: '14%', size: 3 },
-            { top: '6%',  left: '72%', size: 2.5 },
-            { top: '20%', left: '84%', size: 2 },
-            { top: '15%', left: '8%',  size: 2 },
-            { top: '28%', left: '90%', size: 1.5 },
-            { top: '5%',  left: '50%', size: 2 },
-          ].map((s, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full"
-              style={{
-                top: s.top,
-                left: s.left,
-                width: s.size * 2,
-                height: s.size * 2,
-                background: 'radial-gradient(circle, rgba(212,168,80,0.9), transparent 70%)',
-                boxShadow: `0 0 ${s.size * 5}px rgba(212,168,80,0.35)`,
-              }}
-            />
-          ))}
-        </div>
+        {/* Subtle stars */}
+        {[
+          { t: '8%',  l: '12%', s: 3 },
+          { t: '5%',  l: '68%', s: 2 },
+          { t: '14%', l: '82%', s: 2.5 },
+          { t: '18%', l: '28%', s: 1.5 },
+          { t: '22%', l: '91%', s: 2 },
+          { t: '6%',  l: '48%', s: 1.5 },
+          { t: '30%', l: '6%',  s: 2 },
+        ].map((star, i) => (
+          <div key={i} style={{
+            position: 'absolute',
+            top: star.t, left: star.l,
+            width: star.s, height: star.s,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.7)',
+            pointerEvents: 'none',
+          }} />
+        ))}
 
-        {/* Content — pushed toward bottom half where it's darker */}
-        <div className="relative z-10 mt-auto flex flex-col items-center gap-6 px-6 pb-0 pt-[46vh] text-center">
+        {/* Content */}
+        <div style={{
+          position: 'relative',
+          zIndex: 10,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1.1rem',
+          padding: '0 1.5rem',
+        }}>
+          <p style={{ ...label, color: GOLD }}>A Typing Adventure</p>
 
-          {/* Season badge */}
-          <div
-            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em]"
-            style={{
-              background: 'rgba(212,168,80,0.12)',
-              border: '1px solid rgba(212,168,80,0.35)',
-              color: '#d4a850',
-            }}
-          >
-            <span
-              className="h-1.5 w-1.5 rounded-full"
-              style={{ background: '#d4a850' }}
-            />
-            Season 01: The Sprouting
-          </div>
-
-          {/* Headline */}
-          <h1
-            className="max-w-3xl text-[clamp(3rem,7.5vw,6rem)] font-black uppercase leading-[0.95] tracking-[0.01em] text-white"
-            style={{ textShadow: '0 2px 40px rgba(0,0,0,0.7)' }}
-          >
-            The Digital
-            <br />
-            Homestead
+          <h1 style={{
+            fontFamily: 'var(--font-display, monospace)',
+            fontSize: 'clamp(4rem, 9vw, 7rem)',
+            lineHeight: 1,
+            color: TEXT,
+            margin: 0,
+            letterSpacing: '0.04em',
+            textShadow: '0 4px 32px rgba(0,0,0,0.8)',
+          }}>
+            Keycroft
           </h1>
 
-          {/* Subhead */}
-          <p
-            className="max-w-md text-sm leading-7"
-            style={{ color: 'rgba(255,255,255,0.55)' }}
-          >
-            Every keystroke builds your village. Type to forge new
-            structures, unlock rare crafts, and grow your legacy.
+          <p style={{
+            maxWidth: 400,
+            fontSize: '0.78rem',
+            lineHeight: 1.9,
+            color: 'rgba(230,237,243,0.6)',
+            margin: 0,
+          }}>
+            Master your keyboard one village at a time. Start
+            from the basics, grow your skills, and unlock new
+            worlds as you progress.
           </p>
 
-          {/* Live typing demo */}
-          <HeroTypingDemo />
-        </div>
+          <Link href="/play" style={{
+            marginTop: '0.4rem',
+            display: 'inline-block',
+            padding: '0.9rem 2.8rem',
+            background: GREEN,
+            color: '#fff',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            border: `1px solid ${GREEN_T}`,
+            borderRadius: 4,
+          }}>
+            Begin Journey
+          </Link>
 
-        {/* ── Stats bar ── pinned to bottom of hero */}
-        <div
-          className="relative z-10 mt-8 grid grid-cols-2 gap-px md:grid-cols-4"
-          style={{ background: 'rgba(212,168,80,0.18)' }}
-        >
-          {[
-            { value: '42,901', label: 'Harvests Today' },
-            { value: '104 WPM', label: 'Global Average' },
-            { value: '1.2M', label: 'Words Planted' },
-            { value: '842', label: 'Active Villages' },
-          ].map((s) => (
-            <div
-              key={s.label}
-              className="flex flex-col items-center gap-0.5 px-6 py-4"
-              style={{ background: 'rgba(8,18,8,0.88)' }}
-            >
-              <span
-                className="text-xl font-black tabular-nums"
-                style={{ color: '#d4a850' }}
-              >
-                {s.value}
-              </span>
-              <span
-                className="text-[9px] uppercase tracking-[0.22em]"
-                style={{ color: 'rgba(255,255,255,0.4)' }}
-              >
-                {s.label}
-              </span>
-            </div>
-          ))}
+          <EnterKeyStart href="/play" />
+
+          {/* Scroll cue into next section */}
+          <div style={{ marginTop: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+            <p style={label}>The Path</p>
+            <p style={{ ...displayHeading('1.9rem'), color: 'rgba(230,237,243,0.8)' }}>How It Works</p>
+          </div>
         </div>
       </section>
 
-
-      {/* ── Tools of the Trade ── */}
-      <section style={{ background: '#f4efe4' }} className="px-6 pb-16 pt-8 md:px-8">
-        <div className="mx-auto max-w-4xl">
-          <p
-            className="mb-1 text-center text-[10px] uppercase tracking-[0.3em]"
-            style={{ color: '#8a7a5a' }}
-          >
-            Mastery &amp; Growth
-          </p>
-          {/* Heading with decorative line */}
-          <div className="mb-10 flex items-center justify-center gap-4">
-            <span
-              className="hidden h-px w-16 md:block"
-              style={{ background: '#c8b890' }}
-            />
-            <h2
-              className="text-center text-2xl font-bold"
-              style={{ color: '#1c2e1e' }}
-            >
-              Tools of the Trade
-            </h2>
-            <span
-              className="hidden h-px w-16 md:block"
-              style={{ background: '#c8b890' }}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {tools.map((t) => (
-              <div
-                key={t.letter}
-                className="rounded-xl p-6"
-                style={{
-                  border: '1px solid #d8cfbc',
-                  background: '#faf7f0',
-                }}
-              >
-                <div
-                  className="mb-4 flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold"
-                  style={{
-                    border: '2px solid #4a8c3a',
-                    color: '#4a8c3a',
-                    background: '#e8f0e4',
-                  }}
-                >
-                  {t.letter}
+      {/* ── How It Works ────────────────────────────────────────── */}
+      <section style={section({ paddingTop: '4rem' })}>
+        <div style={{ maxWidth: 860, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1rem' }}>
+            {howItWorks.map((item) => (
+              <div key={item.numeral} style={{
+                background: BG_CARD,
+                border: `1px solid ${BORDER}`,
+                borderRadius: 6,
+                padding: '1.75rem 1.5rem',
+              }}>
+                {/* Roman numeral badge */}
+                <div style={{
+                  width: 36, height: 36,
+                  border: `1px solid ${GOLD}`,
+                  borderRadius: 4,
+                  background: 'rgba(196,154,58,0.08)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontFamily: 'var(--font-display, monospace)',
+                  fontSize: '1.1rem',
+                  color: GOLD,
+                  marginBottom: '1rem',
+                }}>
+                  {item.numeral}
                 </div>
-                <p
-                  className="mb-2 font-semibold"
-                  style={{ color: '#1c2e1e' }}
-                >
-                  {t.title}
-                </p>
-                <p
-                  className="text-sm leading-6"
-                  style={{ color: '#5a6a5e' }}
-                >
-                  {t.desc}
+                <p style={{ ...displayHeading('1.5rem'), marginBottom: '0.6rem' }}>{item.title}</p>
+                <p style={{ fontSize: '0.74rem', lineHeight: 1.85, color: MUTED, margin: 0 }}>
+                  {item.desc}
                 </p>
               </div>
             ))}
@@ -272,252 +251,173 @@ export default function MarketingHomePage() {
         </div>
       </section>
 
-      {/* ── The Village Square ── */}
-      <section
-        style={{
-          background: '#f4efe4',
-          borderTop: '1px solid #d8cfbc',
-        }}
-        className="px-6 py-16 md:px-8"
-      >
-        <div className="mx-auto flex max-w-5xl flex-col gap-10 md:flex-row">
-          {/* Left column */}
-          <div className="flex-1">
-            <p
-              className="mb-1 text-[10px] uppercase tracking-[0.3em]"
-              style={{ color: '#8a7a5a' }}
-            >
-              Community Hearth
-            </p>
-            <h2
-              className="mb-4 text-2xl font-bold"
-              style={{ color: '#1c2e1e' }}
-            >
-              The Village Square
-            </h2>
-            <p
-              className="mb-8 max-w-md text-sm leading-6"
-              style={{ color: '#5a6a5e' }}
-            >
-              Join a thriving community of digital homesteaders. Whether you&apos;re
-              a lone scribe or part of a bustling clan, there&apos;s always a seat by the
-              hearth.
-            </p>
+      {/* ── The Villages ────────────────────────────────────────── */}
+      <section style={section({ paddingTop: 0, borderTop: `1px solid ${BORDER_S}` })}>
+        <div style={{ maxWidth: 660, margin: '0 auto' }}>
 
-            <div className="grid grid-cols-2 gap-5">
-              {communityFeatures.map((f) => (
-                <div key={f.title}>
-                  <span
-                    className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg text-base"
-                    style={{ background: '#e8f0e4' }}
-                  >
-                    {f.icon}
-                  </span>
-                  <p
-                    className="mb-1 text-sm font-semibold"
-                    style={{ color: '#1c2e1e' }}
-                  >
-                    {f.title}
+          {/* Section header */}
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <p style={{ ...label, marginBottom: '0.4rem' }}>Progression</p>
+            <h2 style={{ ...displayHeading('2.2rem'), marginBottom: '0.875rem' }}>The Villages</h2>
+            <p style={{ fontSize: '0.74rem', lineHeight: 1.85, color: MUTED, maxWidth: 380, margin: '0 auto' }}>
+              Each village introduces new challenges. Earn enough mastery to unlock the next.
+            </p>
+          </div>
+
+          {/* Village list */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            {villages.map((v) => (
+              <div key={v.name} style={{
+                background: BG_CARD,
+                border: `1px solid ${v.open ? GREEN : BORDER}`,
+                borderRadius: 6,
+                padding: '0.9rem 1.1rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.875rem',
+              }}>
+                {/* Icon */}
+                <div style={{
+                  width: 32, height: 32,
+                  border: `1px solid ${BORDER}`,
+                  borderRadius: 4,
+                  background: BG,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '0.85rem',
+                  flexShrink: 0,
+                  color: v.open ? GOLD : MUTED,
+                }}>
+                  {v.open ? '⌂' : '⚔'}
+                </div>
+
+                {/* Text */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 700, color: v.open ? TEXT : MUTED }}>
+                    {v.name}
                   </p>
-                  <p
-                    className="text-xs leading-5"
-                    style={{ color: '#6a7a5e' }}
-                  >
-                    {f.desc}
+                  <p style={{ margin: '2px 0 0', fontSize: '0.68rem', color: MUTED }}>
+                    {v.desc}
                   </p>
                 </div>
-              ))}
-            </div>
+
+                {/* Status */}
+                {v.open ? (
+                  <Link href="/play" style={{
+                    fontSize: '0.65rem',
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                    color: GREEN_T,
+                    textDecoration: 'none',
+                    fontWeight: 700,
+                    flexShrink: 0,
+                  }}>
+                    Open
+                  </Link>
+                ) : (
+                  <span style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: BORDER, flexShrink: 0 }}>
+                    Lv.{v.level}
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
 
-          {/* Right column */}
-          <div className="flex w-full flex-col gap-4 md:w-[320px]">
-            {/* Image placeholder */}
-            <div
-              className="relative flex h-48 items-end justify-end overflow-hidden rounded-xl p-3"
-              style={{
-                background: '#e0dbd0',
-                border: '1px solid #d8cfbc',
-              }}
-            >
-              <span
-                className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-wider"
-                style={{
-                  background: '#d4a850',
-                  color: '#fff',
-                }}
-              >
-                Nearly Level Cap
-              </span>
-            </div>
-
-            {/* Become a Citizen card */}
-            <div
-              className="rounded-xl p-5"
-              style={{
-                border: '1px solid #d8cfbc',
-                background: '#faf7f0',
-              }}
-            >
-              <h3
-                className="mb-2 text-lg font-bold"
-                style={{ color: '#1c2e1e' }}
-              >
-                Become a Citizen
-              </h3>
-              <p
-                className="mb-4 text-xs leading-5"
-                style={{ color: '#6a7a5e' }}
-              >
-                Your reputation begins in a day. Set forth to claim
-                a village estate. Join ranks in homesteading mastery.
-              </p>
-              <Link
-                href="/play"
-                className="inline-block rounded-lg px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition hover:opacity-90"
-                style={{ background: '#4a8c3a' }}
-              >
-                Join the Guild
-              </Link>
-            </div>
-            {/* Decorative scroll icon */}
-            <div className="flex justify-end pr-2">
-              <span style={{ color: '#c8b890', fontSize: '24px' }}>🌿</span>
-            </div>
+          {/* Keyboard icon */}
+          <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
+            <div style={{
+              display: 'inline-flex',
+              width: 48, height: 48,
+              alignItems: 'center', justifyContent: 'center',
+              border: `1px solid ${BORDER}`,
+              borderRadius: 6,
+              background: BG_CARD,
+              fontSize: '1.3rem',
+              color: MUTED,
+            }}>⌨</div>
           </div>
         </div>
       </section>
 
-      {/* ── Testimonial ── */}
-      <section
-        style={{
-          background: '#f4efe4',
-          borderTop: '1px solid #d8cfbc',
-        }}
-        className="px-6 py-16 md:px-8"
-      >
-        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          {/* Decorative quote mark */}
-          <div
-            className="mb-6 flex h-14 w-14 items-center justify-center rounded-full text-2xl"
-            style={{
-              border: '2px solid #c8b890',
-              color: '#d4a850',
-              background: '#faf7f0',
-            }}
-          >
-            &ldquo;
-          </div>
-          <blockquote
-            className="mb-6 max-w-xl text-lg italic leading-8"
-            style={{ color: '#2a3e2c' }}
-          >
-            &ldquo;Keycroft transformed my daily typing grind into a
-            meditative building experience. I&apos;ve watched my
-            small cabin grow into a grand manor, all through
-            the power of 120 words per minute.&rdquo;
-          </blockquote>
+      {/* ── Ready to Begin ──────────────────────────────────────── */}
+      <section style={section({ borderTop: `1px solid ${BORDER_S}` })}>
+        <div style={{
+          maxWidth: 600,
+          margin: '0 auto',
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1.25rem',
+        }}>
+          {/* Keyboard icon */}
+          <div style={{
+            width: 56, height: 56,
+            border: `1px solid ${GOLD}`,
+            borderRadius: 6,
+            background: 'rgba(196,154,58,0.08)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1.5rem',
+            color: GOLD,
+          }}>⌨</div>
 
-          {/* Avatar + attribution */}
-          <div className="flex flex-col items-center gap-1">
-            <div
-              className="mb-2 flex h-12 w-12 items-center justify-center rounded-full text-xl"
-              style={{
-                background: '#e8f0e4',
-                border: '2px solid #c8b890',
-              }}
-            >
-              🧙
-            </div>
-            <p className="text-sm font-bold" style={{ color: '#1c2e1e' }}>
-              Master Scribe Julian
-            </p>
-            <p className="text-xs" style={{ color: '#8a7a5a' }}>
-              Order of the Typing Guild
-            </p>
-          </div>
-        </div>
-      </section>
+          <h2 style={displayHeading('3rem')}>Ready to Begin?</h2>
 
-      {/* ── CTA ── */}
-      <section
-        className="px-6 py-20 text-center md:px-8"
-        style={{ background: '#2d4a2e' }}
-      >
-        <div className="mx-auto max-w-2xl">
-          <h2 className="mb-4 text-3xl font-bold text-white">
-            Ready to start your first harvest?
-          </h2>
-          <p
-            className="mx-auto mb-8 max-w-md text-sm leading-7"
-            style={{ color: 'rgba(255,255,255,0.6)' }}
-          >
-            Join thousands of scribes mastering the ultimate digital
-            framework. Your legacy begins with the first word.
+          <p style={{ fontSize: '0.76rem', lineHeight: 1.9, color: MUTED, maxWidth: 400, margin: 0 }}>
+            No rush. No pressure. Just you, your keyboard, and a world
+            waiting to be explored.
           </p>
-          <Link
-            href="/play"
-            className="inline-block rounded-full px-8 py-3.5 text-sm font-bold uppercase tracking-wider transition hover:opacity-90"
-            style={{
-              background: '#4a8c3a',
-              color: '#fff',
-              boxShadow: '0 4px 24px rgba(74,140,58,0.4)',
-            }}
-          >
-            Enter Keycroft Now
+
+          <Link href="/play" style={{
+            display: 'inline-block',
+            marginTop: '0.25rem',
+            padding: '1rem 3.5rem',
+            background: GOLD,
+            color: BG,
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            borderRadius: 4,
+          }}>
+            Enter the Village
           </Link>
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer
-        className="px-6 py-8 md:px-8"
-        style={{
-          background: '#1a2e1c',
-          borderTop: '2px solid #d4a850',
-        }}
-      >
-        <div className="mx-auto flex max-w-5xl flex-col gap-6">
-          {/* Top row */}
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="flex items-center gap-2">
-              <span style={{ color: '#7aaa82' }}>🌿</span>
-              <span
-                className="text-sm font-bold uppercase tracking-[0.18em]"
-                style={{ color: '#f4efe4' }}
-              >
-                Keycroft
-              </span>
-            </div>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-              &copy; Keycroft &middot; All rights reserved.
-            </p>
-          </div>
-
-          {/* Footer links */}
-          <div
-            className="flex flex-wrap items-center justify-center gap-6 border-t pt-5"
-            style={{ borderColor: 'rgba(255,255,255,0.1)' }}
-          >
-            {[
-              'The Village',
-              'Workshops',
-              'Data & Privacy',
-              'Privacy',
-              'Terms',
-            ].map((link) => (
-              <Link
-                key={link}
-                href="#"
-                className="text-xs transition hover:opacity-80"
-                style={{ color: 'rgba(255,255,255,0.45)' }}
-              >
-                {link}
-              </Link>
-            ))}
-          </div>
+      {/* ── Footer ──────────────────────────────────────────────── */}
+      <footer style={{
+        background: BG,
+        borderTop: `1px solid ${BORDER_S}`,
+        padding: '1.25rem 1.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '0.75rem',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+          <div style={{
+            width: 20, height: 20,
+            border: `1px solid ${BORDER}`,
+            borderRadius: 3,
+            background: BG_CARD,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 10,
+          }}>⌨</div>
+          <span style={{
+            fontFamily: 'var(--font-display, monospace)',
+            fontSize: '1rem',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: MUTED,
+          }}>Keycroft</span>
         </div>
+        <p style={{ fontSize: '0.68rem', color: MUTED, margin: 0 }}>
+          Built for typists who enjoy the journey
+        </p>
       </footer>
+
     </div>
   )
 }
