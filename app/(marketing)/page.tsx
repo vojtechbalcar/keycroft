@@ -367,7 +367,7 @@ export default function MarketingHomePage() {
             waiting to be explored.
           </p>
 
-          <Link href="/play" style={{
+          <Link href="/world" style={{
             display: 'inline-block',
             marginTop: '0.25rem',
             padding: '1rem 3.5rem',

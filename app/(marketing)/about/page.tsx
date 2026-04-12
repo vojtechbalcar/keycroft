@@ -20,7 +20,7 @@ export default function AboutPage() {
           </span>
         </Link>
         <Link
-          href="/play"
+          href="/world"
           className="rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-90"
           style={{ background: '#4a8c3a', color: '#fff' }}
         >
@@ -76,7 +76,7 @@ export default function AboutPage() {
             Your first session takes about ten minutes. No account needed to begin.
           </p>
           <Link
-            href="/play"
+            href="/world"
             className="inline-block rounded-lg px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition hover:opacity-90"
             style={{ background: '#4a8c3a' }}
           >

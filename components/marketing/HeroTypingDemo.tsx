@@ -114,7 +114,7 @@ export function HeroTypingDemo() {
             </div>
             <div className="flex gap-3">
               <Link
-                href="/play"
+                href="/world"
                 className="rounded-full px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
                 style={{
                   background: '#4a8c3a',
@@ -204,7 +204,7 @@ export function HeroTypingDemo() {
             {/* CTAs */}
             <div className="mt-5 flex flex-wrap items-center gap-3">
               <Link
-                href="/play"
+                href="/world"
                 className="rounded-full px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
                 style={{
                   background: '#4a8c3a',
@@ -214,7 +214,7 @@ export function HeroTypingDemo() {
                 Start Your Harvest
               </Link>
               <Link
-                href="/home"
+                href="/world"
                 className="rounded-full border px-5 py-2.5 text-sm font-semibold transition hover:bg-white/10"
                 style={{
                   borderColor: 'rgba(255,255,255,0.2)',

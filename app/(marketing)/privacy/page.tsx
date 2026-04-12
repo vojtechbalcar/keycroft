@@ -20,7 +20,7 @@ export default function PrivacyPage() {
           </span>
         </Link>
         <Link
-          href="/play"
+          href="/world"
           className="rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-90"
           style={{ background: '#4a8c3a', color: '#fff' }}
         >

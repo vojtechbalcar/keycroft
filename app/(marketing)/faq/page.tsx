@@ -55,7 +55,7 @@ export default function FaqPage() {
           </span>
         </Link>
         <Link
-          href="/play"
+          href="/world"
           className="rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-90"
           style={{ background: '#4a8c3a', color: '#fff' }}
         >
@@ -101,7 +101,7 @@ export default function FaqPage() {
             </a>
           </p>
           <Link
-            href="/play"
+            href="/world"
             className="inline-block rounded-full px-7 py-3 text-sm font-semibold text-white transition hover:opacity-90"
             style={{ background: '#4a8c3a' }}
           >

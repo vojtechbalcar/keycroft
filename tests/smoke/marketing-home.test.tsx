@@ -10,8 +10,16 @@ describe('MarketingHomePage', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: /the digital homestead/i,
+        name: /keycroft/i,
       }),
     ).toBeInTheDocument()
+  })
+
+  it('routes the primary entry CTA into the world flow', () => {
+    render(<MarketingHomePage />)
+
+    expect(
+      screen.getByRole('link', { name: /enter the village/i }),
+    ).toHaveAttribute('href', '/world')
   })
 })
