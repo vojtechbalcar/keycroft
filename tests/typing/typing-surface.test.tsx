@@ -34,6 +34,20 @@ describe('TypingSurface', () => {
     expect(typingLine.querySelector('[data-status="incorrect"]')).toBeNull()
   })
 
+  it('highlights the next expected key and lets the visible keyboard type it', () => {
+    render(<TypingSurface prompt={prompt} onComplete={() => undefined} />)
+
+    const expectedKey = screen.getByRole('button', { name: /type c/i })
+    expect(expectedKey).toHaveAttribute('data-key-state', 'expected')
+
+    fireEvent.click(expectedKey)
+
+    expect(screen.getByRole('button', { name: /type a/i })).toHaveAttribute(
+      'data-key-state',
+      'expected',
+    )
+  })
+
   it('calls onComplete when the full prompt is typed correctly', () => {
     const onComplete = vi.fn()
 

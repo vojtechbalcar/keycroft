@@ -60,6 +60,34 @@ export default function VillageTypePage({ params }: Props) {
     () => villageDefinitions.find((village) => village.id === villageId),
     [villageId],
   )
+  const content = VILLAGE_CONTENT[villageId as VillageId]
+  const galleryLessons = useMemo(() => {
+    if (!definition || !content) {
+      return []
+    }
+
+    return buildVillageLessonGallery(content, definition)
+  }, [content, definition])
+  const activeLesson = galleryLessons[activeLessonIndex] ?? galleryLessons[0] ?? null
+  const groupedLessons = useMemo(() => {
+    const groups = new Map<string, typeof galleryLessons>()
+
+    for (const lesson of galleryLessons) {
+      const section =
+        lesson.kind === 'foundation'
+          ? 'Foundation keys'
+          : lesson.kind === 'authored'
+            ? 'Village lessons'
+            : lesson.kind === 'story'
+              ? 'Story drills'
+              : 'Capstone'
+
+      groups.set(section, [...(groups.get(section) ?? []), lesson])
+    }
+
+    return [...groups.entries()]
+  }, [galleryLessons])
+  const villageMastery = progress?.villageMastery[villageId as VillageId] ?? 0
 
   useEffect(() => {
     if (progress === null) {
@@ -89,31 +117,15 @@ export default function VillageTypePage({ params }: Props) {
     )
   }
 
-  const villageMastery = progress.villageMastery[villageId as VillageId] ?? 0
-  const content = VILLAGE_CONTENT[villageId as VillageId]
-  const galleryLessons = useMemo(
-    () => buildVillageLessonGallery(content, definition),
-    [content, definition],
-  )
-  const activeLesson = galleryLessons[activeLessonIndex]
-  const groupedLessons = useMemo(() => {
-    const groups = new Map<string, typeof galleryLessons>()
-
-    for (const lesson of galleryLessons) {
-      const section =
-        lesson.kind === 'foundation'
-          ? 'Foundation keys'
-          : lesson.kind === 'authored'
-            ? 'Village lessons'
-            : lesson.kind === 'story'
-              ? 'Story drills'
-              : 'Capstone'
-
-      groups.set(section, [...(groups.get(section) ?? []), lesson])
-    }
-
-    return [...groups.entries()]
-  }, [galleryLessons])
+  if (!activeLesson) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[linear-gradient(180deg,#f4ebd7_0%,#ebdfc9_100%)]">
+        <p className="text-sm text-[var(--kc-on-surface-muted)]">
+          This village does not have lessons yet.
+        </p>
+      </div>
+    )
+  }
 
   function handleSessionComplete(session: TypingSessionState) {
     const metrics = calculateSessionMetrics(session)

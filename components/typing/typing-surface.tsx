@@ -10,6 +10,7 @@ import {
 } from 'react'
 
 import { normalizeTypingKey } from '@/lib/typing/key-events'
+import type { TypingKeyAction } from '@/lib/typing/key-events'
 import type { PracticeText } from '@/lib/typing/practice-texts'
 import {
   applyTypingAction,
@@ -25,7 +26,27 @@ const KB_ROWS = [
   ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
 ]
 
-function KeyboardViz({ keyFocus }: { keyFocus?: string[] }) {
+type KeyboardVizProps = {
+  keyFocus?: string[]
+  expectedKey: string | null
+  feedback: { key: string; tone: 'correct' | 'incorrect' } | null
+  onPressKey: (key: string) => void
+}
+
+function getKeyButtonLabel(key: string): string {
+  if (key === ';') {
+    return 'Type semicolon'
+  }
+
+  return `Type ${key}`
+}
+
+function KeyboardViz({
+  keyFocus,
+  expectedKey,
+  feedback,
+  onPressKey,
+}: KeyboardVizProps) {
   const focus = new Set((keyFocus ?? []).map((key) => key.toLowerCase()))
 
   return (
@@ -40,26 +61,76 @@ function KeyboardViz({ keyFocus }: { keyFocus?: string[] }) {
         >
           {row.map((key) => {
             const active = focus.size === 0 || focus.has(key)
+            const keyState =
+              feedback?.key === key
+                ? feedback.tone === 'correct'
+                  ? 'correct'
+                  : 'incorrect'
+                : expectedKey === key
+                  ? 'expected'
+                  : active
+                    ? 'focus'
+                    : 'idle'
+
+            const styleByState =
+              keyState === 'correct'
+                ? {
+                    border: '1px solid rgba(74,140,58,0.52)',
+                    background: 'rgba(223,234,213,0.98)',
+                    color: 'var(--kc-accent-on-surface)',
+                    boxShadow: '0 10px 18px rgba(74,140,58,0.16)',
+                    transform: 'translateY(-1px)',
+                  }
+                : keyState === 'incorrect'
+                  ? {
+                      border: '1px solid rgba(184,52,27,0.44)',
+                      background: 'rgba(248,226,220,0.98)',
+                      color: 'var(--kc-error)',
+                      boxShadow: '0 10px 18px rgba(184,52,27,0.12)',
+                      transform: 'translateY(-1px)',
+                    }
+                  : keyState === 'expected'
+                    ? {
+                        border: '1px solid rgba(196,155,60,0.48)',
+                        background: 'rgba(252,244,216,0.98)',
+                        color: 'var(--kc-on-surface)',
+                        boxShadow: '0 10px 18px rgba(196,155,60,0.12)',
+                        transform: 'translateY(-1px)',
+                      }
+                    : keyState === 'focus'
+                      ? {
+                          border: '1px solid rgba(74,140,58,0.36)',
+                          background: 'rgba(238,245,229,0.98)',
+                          color: 'var(--kc-accent-on-surface)',
+                          boxShadow: '0 10px 18px rgba(74,140,58,0.10)',
+                          transform: 'translateY(0px)',
+                        }
+                      : {
+                          border: '1px solid rgba(108,94,72,0.18)',
+                          background: 'rgba(255,250,240,0.55)',
+                          color: 'rgba(107,94,72,0.55)',
+                          boxShadow: 'none',
+                          transform: 'translateY(0px)',
+                        }
 
             return (
-              <div
+              <button
+                aria-label={getKeyButtonLabel(key)}
+                data-key={key}
+                data-key-state={keyState}
                 key={key}
+                onClick={() => onPressKey(key)}
+                onMouseDown={(event) => {
+                  event.preventDefault()
+                }}
                 className="flex h-8 w-8 items-center justify-center rounded-[10px] border text-[0.62rem] font-semibold transition-all"
                 style={{
-                  border: active
-                    ? '1px solid rgba(74,140,58,0.36)'
-                    : '1px solid rgba(108,94,72,0.18)',
-                  background: active
-                    ? 'rgba(238,245,229,0.98)'
-                    : 'rgba(255,250,240,0.55)',
-                  color: active
-                    ? 'var(--kc-accent-on-surface)'
-                    : 'rgba(107,94,72,0.55)',
-                  boxShadow: active ? '0 10px 18px rgba(74,140,58,0.10)' : 'none',
+                  ...styleByState,
                 }}
+                type="button"
               >
                 {key.toUpperCase()}
-              </div>
+              </button>
             )
           })}
         </div>
@@ -114,6 +185,10 @@ export function TypingSurface({
   const [session, setSession] = useState(() => createTypingSession(prompt.text))
   const [now, setNow] = useState(Date.now())
   const [focused, setFocused] = useState(false)
+  const [keyboardFeedback, setKeyboardFeedback] = useState<{
+    key: string
+    tone: 'correct' | 'incorrect'
+  } | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -132,6 +207,18 @@ export function TypingSurface({
     return () => window.clearInterval(intervalId)
   }, [session.startedAt, session.isComplete])
 
+  useEffect(() => {
+    if (keyboardFeedback === null) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setKeyboardFeedback(null)
+    }, 180)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [keyboardFeedback])
+
   const characters = getCharacterStatuses(session)
   const cursorIndex = session.inputValue.length
   const errors = getCurrentErrorCount(session)
@@ -144,15 +231,21 @@ export function TypingSurface({
   const wpm =
     elapsedMinutes > 0 ? Math.round((correctTyped / 5) / elapsedMinutes) : 0
   const progress = Math.round((cursorIndex / prompt.text.length) * 100)
+  const expectedKey = session.isComplete
+    ? null
+    : session.targetText[cursorIndex]?.toLowerCase() ?? null
 
-  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    const action = normalizeTypingKey(event)
+  function applyAction(action: TypingKeyAction, sourceKey?: string) {
+    const feedbackKey =
+      sourceKey?.toLowerCase() ??
+      (action.type === 'input' ? action.value.toLowerCase() : null)
 
-    if (action.type === 'ignore') {
-      return
+    if (action.type === 'input' && feedbackKey !== null) {
+      setKeyboardFeedback({
+        key: feedbackKey,
+        tone: feedbackKey === expectedKey ? 'correct' : 'incorrect',
+      })
     }
-
-    event.preventDefault()
 
     const nextSession = applyTypingAction(session, action, Date.now())
     setSession(nextSession)
@@ -162,8 +255,24 @@ export function TypingSurface({
     }
   }
 
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    const action = normalizeTypingKey(event)
+
+    if (action.type === 'ignore') {
+      return
+    }
+
+    event.preventDefault()
+    applyAction(action)
+  }
+
   function handlePaste(event: ClipboardEvent<HTMLInputElement>) {
     event.preventDefault()
+  }
+
+  function handleKeyboardKeyPress(key: string) {
+    inputRef.current?.focus()
+    applyAction({ type: 'input', value: key }, key)
   }
 
   return (
@@ -294,7 +403,12 @@ export function TypingSurface({
         </div>
 
         <div className="rounded-[24px] border border-[rgba(107,94,72,0.14)] bg-[rgba(255,250,240,0.86)] p-4">
-          <KeyboardViz keyFocus={keyFocus} />
+          <KeyboardViz
+            expectedKey={expectedKey}
+            feedback={keyboardFeedback}
+            keyFocus={keyFocus}
+            onPressKey={handleKeyboardKeyPress}
+          />
         </div>
 
         <div className="rounded-[24px] border border-[rgba(107,94,72,0.14)] bg-[rgba(255,250,240,0.72)] p-4">
