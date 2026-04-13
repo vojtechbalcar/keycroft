@@ -21,6 +21,9 @@ export function VillageStageBackdrop({
       alt=""
       aria-hidden="true"
       draggable={false}
+      onDragStart={(event) => {
+        event.preventDefault()
+      }}
       src={art.imagePath}
       style={{
         position: 'absolute',
@@ -32,7 +35,6 @@ export function VillageStageBackdrop({
         imageRendering: 'pixelated',
         pointerEvents: 'none',
         userSelect: 'none',
-        WebkitUserDrag: 'none',
       }}
     />
   )
