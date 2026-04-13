@@ -7,6 +7,7 @@ import { villageDefinitions, type VillageId } from '@/lib/world/village-definiti
 import { useResolvedProgress } from '@/lib/storage/use-resolved-progress'
 import { projectWorld } from '@/lib/world/project-world'
 import { VillageStageBackdrop } from '@/components/world/village-stage-backdrop'
+import { getVillageStageLevel } from '@/lib/world/village-stage-art'
 import {
   VILLAGE_BUILDINGS,
   getBuildingLevel,
@@ -99,12 +100,14 @@ export default function VillageLandingPage({ params }: Props) {
       {/* ── Building hotspots ─────────────────────────── */}
       {!isLocked && buildings.map((building) => {
         const lvl = getBuildingLevel(mastery, building)
+        const displayLevel =
+          villageId === 'meadow-farm' ? getVillageStageLevel(mastery) - 1 : lvl
         const isActive = activeBuilding?.id === building.id
         return (
           <BuildingHotspot
             key={building.id}
             building={building}
-            level={lvl}
+            level={displayLevel}
             isActive={isActive}
             onClick={() => setActiveBuilding(isActive ? null : building)}
           />
@@ -219,61 +222,47 @@ function BuildingHotspot({
   isActive: boolean
   onClick: () => void
 }) {
-  const [hovered, setHovered] = useState(false)
+  const labelX = building.labelPosition?.x ?? building.hotspot.x
+  const labelY = building.labelPosition?.y ?? building.hotspot.y
+  const labelText = `${building.name} Lv. ${level + 1}`
 
   return (
     <button
       onClick={(e) => { e.stopPropagation(); onClick() }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      aria-label={labelText}
+      title={labelText}
       style={{
         position: 'absolute',
-        left: `${building.hotspot.x}%`,
-        top: `${building.hotspot.y}%`,
+        left: `${labelX}%`,
+        top: `${labelY}%`,
         transform: 'translate(-50%, -50%)',
-        zIndex: 15,
+        zIndex: isActive ? 22 : 18,
         background: 'none',
         border: 'none',
         padding: 0,
         cursor: 'pointer',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 4,
+        display: 'block',
       }}
     >
-      {/* Pulsing dot */}
       <div style={{
-        width: isActive ? 18 : hovered ? 16 : 12,
-        height: isActive ? 18 : hovered ? 16 : 12,
-        borderRadius: '50%',
-        background: isActive ? GOLD : 'rgba(196,154,58,0.85)',
+        background: isActive ? 'rgba(57,70,77,0.98)' : 'rgba(42,52,58,0.94)',
+        border: isActive
+          ? '1px solid rgba(196,154,58,0.75)'
+          : '1px solid rgba(84,103,109,0.92)',
         boxShadow: isActive
-          ? `0 0 0 6px rgba(196,154,58,0.25), 0 0 20px rgba(196,154,58,0.5)`
-          : hovered
-            ? `0 0 0 4px rgba(196,154,58,0.2), 0 0 14px rgba(196,154,58,0.4)`
-            : `0 0 0 3px rgba(196,154,58,0.15), 0 0 10px rgba(196,154,58,0.3)`,
-        transition: 'all 150ms ease',
-        animation: isActive ? 'none' : 'kc-blink 2s ease-in-out infinite',
-      }} />
-
-      {/* Label on hover */}
-      {(hovered || isActive) && (
-        <div style={{
-          background: 'rgba(42,52,58,0.94)',
-          border: '1px solid rgba(84,103,109,0.92)',
-          boxShadow: '0 1px 0 rgba(255,255,255,0.08) inset, 0 4px 0 rgba(0,0,0,0.35)',
-          padding: '4px 9px 5px',
-          fontSize: '0.64rem',
-          fontWeight: 700,
-          color: '#f8fbff',
-          letterSpacing: '0.03em',
-          whiteSpace: 'nowrap',
-          pointerEvents: 'none',
-        }}>
-          {building.name} Lv. {level + 1}
-        </div>
-      )}
+          ? '0 1px 0 rgba(255,255,255,0.08) inset, 0 4px 0 rgba(0,0,0,0.38), 0 0 0 2px rgba(196,154,58,0.12)'
+          : '0 1px 0 rgba(255,255,255,0.08) inset, 0 4px 0 rgba(0,0,0,0.35)',
+        padding: '4px 9px 5px',
+        fontSize: '0.64rem',
+        fontWeight: 700,
+        color: '#f8fbff',
+        letterSpacing: '0.03em',
+        whiteSpace: 'nowrap',
+        transition: 'transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease',
+        transform: isActive ? 'translateY(-1px)' : 'translateY(0)',
+      }}>
+        {labelText}
+      </div>
     </button>
   )
 }

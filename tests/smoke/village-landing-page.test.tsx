@@ -64,7 +64,9 @@ describe('VillageLandingPage', () => {
       )
     })
 
-    expect(screen.getByText('Market Pavilion Lv. 6')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Market Pavilion Lv. 6' }),
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: /start typing/i }),
     ).toHaveAttribute('href', '/world/meadow-farm/type')

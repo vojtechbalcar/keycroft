@@ -14,6 +14,7 @@ export type BuildingDefinition = {
   description: string
   /** Position as % of the village image (left, top) */
   hotspot: { x: number; y: number }
+  labelPosition?: { x: number; y: number }
   levels: BuildingLevel[]
 }
 
@@ -67,7 +68,8 @@ const MEADOW_BUILDINGS: BuildingDefinition[] = [
     name: 'Cottage',
     emoji: '🏠',
     description: 'Your home base in the village. Increases XP earned per session.',
-    hotspot: { x: 15, y: 33 },
+    hotspot: { x: 18, y: 58 },
+    labelPosition: { x: 16, y: 72 },
     levels: buildLevels([
       'No bonus yet',
       '+5% XP gain',
@@ -82,7 +84,8 @@ const MEADOW_BUILDINGS: BuildingDefinition[] = [
     name: 'Market Pavilion',
     emoji: '🏚️',
     description: 'Trades your progress for rewards. Reduces the XP penalty for errors.',
-    hotspot: { x: 55, y: 25 },
+    hotspot: { x: 39, y: 49 },
+    labelPosition: { x: 24, y: 67 },
     levels: buildLevels([
       'No bonus yet',
       '−3% error penalty',
@@ -97,7 +100,8 @@ const MEADOW_BUILDINGS: BuildingDefinition[] = [
     name: 'Village Well',
     emoji: '🪣',
     description: 'Keeps the village thriving. Boosts your accuracy recovery.',
-    hotspot: { x: 78, y: 55 },
+    hotspot: { x: 70, y: 58 },
+    labelPosition: { x: 67, y: 75 },
     levels: buildLevels([
       'No bonus yet',
       '+2% accuracy floor',
@@ -112,7 +116,8 @@ const MEADOW_BUILDINGS: BuildingDefinition[] = [
     name: 'Forge',
     emoji: '⚙️',
     description: 'Where tools are made. Unlocks bonus practice rounds per session.',
-    hotspot: { x: 25, y: 67 },
+    hotspot: { x: 51, y: 74 },
+    labelPosition: { x: 49, y: 82 },
     levels: buildLevels([
       'No bonus yet',
       '+1 bonus drill/session',
