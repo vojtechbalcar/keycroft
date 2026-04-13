@@ -95,8 +95,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: sessionStrategy,
   },
   pages: {
-    signIn: '/settings',
-    verifyRequest: '/settings',
+    signIn: '/login',
+    verifyRequest: '/login',
   },
   callbacks: {
     jwt({ token, user }: { token: JwtToken; user?: AuthUser | null }) {

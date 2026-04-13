@@ -20,6 +20,7 @@ export function VillageStageBackdrop({
     <img
       alt=""
       aria-hidden="true"
+      draggable={false}
       src={art.imagePath}
       style={{
         position: 'absolute',
@@ -29,6 +30,9 @@ export function VillageStageBackdrop({
         objectFit: 'cover',
         objectPosition: 'center',
         imageRendering: 'pixelated',
+        pointerEvents: 'none',
+        userSelect: 'none',
+        WebkitUserDrag: 'none',
       }}
     />
   )
