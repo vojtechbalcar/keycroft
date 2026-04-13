@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 
 type AuthUser = { id?: string; email?: string | null; name?: string | null }
 type JwtToken = { sub?: string | null }
+type CredentialsInput = Partial<Record<'email' | 'password', unknown>> | undefined
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
@@ -17,7 +18,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email:    { label: 'Email',    type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials: CredentialsInput) {
         const email    = String(credentials?.email    ?? '').trim().toLowerCase()
         const password = String(credentials?.password ?? '')
 
