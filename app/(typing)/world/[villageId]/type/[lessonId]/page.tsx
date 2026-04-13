@@ -52,7 +52,6 @@ export default function LessonTypingPage({ params }: Props) {
 
   useEffect(() => {
     if (progress === null) return
-    if (progress.placement === null) router.replace('/onboarding')
   }, [progress, router])
 
   const definition = useMemo(

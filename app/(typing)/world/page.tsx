@@ -22,7 +22,6 @@ export default function WorldPage() {
 
   useEffect(() => {
     if (progress === null) return
-    if (progress.placement === null) router.replace('/onboarding')
   }, [progress, router])
 
   if (!progress) {

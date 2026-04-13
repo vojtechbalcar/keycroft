@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { EnterKeyStart } from '@/components/marketing/EnterKeyStart'
+import { getSessionUser } from '@/lib/auth/get-session-user'
 
 /* ── design tokens ─────────────────────────────────────────────── */
 const BG      = '#0d1117'
@@ -65,7 +66,9 @@ const displayHeading = (size = '2.4rem'): React.CSSProperties => ({
 })
 
 /* ════════════════════════════════════════════════════════════════ */
-export default function MarketingHomePage() {
+export default async function MarketingHomePage() {
+  const sessionUser = await getSessionUser()
+  const journeyHref = sessionUser ? '/world' : '/login'
   return (
     <div style={{ background: BG, color: TEXT, fontFamily: 'var(--font-mono, monospace)' }}>
 
@@ -103,12 +106,38 @@ export default function MarketingHomePage() {
 
         {/* Links */}
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-          <Link href="/home" style={{ color: MUTED, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none' }}>
-            About
-          </Link>
           <Link href="/world" style={{ color: MUTED, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none' }}>
             Villages
           </Link>
+          {sessionUser ? (
+            <Link href="/world" style={{
+              padding: '0.35rem 0.9rem',
+              background: 'rgba(196,154,58,0.1)',
+              border: `1px solid rgba(196,154,58,0.3)`,
+              borderRadius: 4,
+              color: GOLD,
+              fontSize: '0.68rem',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+            }}>
+              {sessionUser.name ?? sessionUser.email ?? 'My Village'}
+            </Link>
+          ) : (
+            <Link href="/login" style={{
+              padding: '0.35rem 0.9rem',
+              background: 'rgba(196,154,58,0.1)',
+              border: `1px solid rgba(196,154,58,0.3)`,
+              borderRadius: 4,
+              color: GOLD,
+              fontSize: '0.68rem',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+            }}>
+              Sign In
+            </Link>
+          )}
         </div>
       </nav>
 
@@ -189,7 +218,7 @@ export default function MarketingHomePage() {
             worlds as you progress.
           </p>
 
-          <Link href="/world" style={{
+          <Link href={journeyHref} style={{
             marginTop: '0.4rem',
             display: 'inline-block',
             padding: '0.9rem 2.8rem',
@@ -206,7 +235,7 @@ export default function MarketingHomePage() {
             Begin Journey
           </Link>
 
-          <EnterKeyStart href="/world" />
+          <EnterKeyStart href={journeyHref} />
 
           {/* Scroll cue into next section */}
           <div style={{ marginTop: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>

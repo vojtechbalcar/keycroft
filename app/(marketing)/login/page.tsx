@@ -1,327 +1,278 @@
-import Link from 'next/link'
+'use client'
 
-import { authFeatures, signIn } from '@/auth'
-import { getSessionUser } from '@/lib/auth/get-session-user'
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 
-async function sendMagicLink(formData: FormData) {
-  'use server'
+const BG     = '#0d1117'
+const CARD   = '#161b22'
+const BORDER = '#21262d'
+const TEXT   = '#e6edf3'
+const MUTED  = '#7d8590'
+const GOLD   = '#c49a3a'
+const RED    = '#f85149'
 
-  const email = String(formData.get('email') ?? '')
-    .trim()
-    .toLowerCase()
+type Tab = 'login' | 'signup'
 
-  if (!email) {
-    return
+async function apiSignUp(email: string, password: string, name: string) {
+  const res = await fetch('/api/auth/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, name }),
+  })
+  return res.ok ? null : (await res.json()).error as string
+}
+
+async function apiSignIn(email: string, password: string) {
+  const { signIn } = await import('next-auth/react')
+  const result = await signIn('credentials', {
+    email,
+    password,
+    redirect: false,
+  })
+  if (result?.error) return 'Invalid email or password.'
+  return null
+}
+
+export default function LoginPage() {
+  const router = useRouter()
+  const [tab, setTab] = useState<Tab>('login')
+  const [error, setError] = useState('')
+  const [isPending, startTransition] = useTransition()
+
+  function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const fd = new FormData(e.currentTarget)
+    const email    = fd.get('email') as string
+    const password = fd.get('password') as string
+    setError('')
+    startTransition(async () => {
+      const err = await apiSignIn(email, password)
+      if (err) { setError(err); return }
+      router.push('/world')
+    })
   }
 
-  await signIn('nodemailer', {
-    email,
-    redirectTo: '/home',
-  })
-}
+  function handleSignUp(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const fd = new FormData(e.currentTarget)
+    const email    = fd.get('email') as string
+    const password = fd.get('password') as string
+    const confirm  = fd.get('confirm') as string
+    const name     = (fd.get('name') as string).trim()
 
-async function signInTestAccount(formData: FormData) {
-  'use server'
+    if (password !== confirm) { setError('Passwords do not match.'); return }
+    if (password.length < 8)  { setError('Password must be at least 8 characters.'); return }
+    setError('')
 
-  await signIn('credentials', formData)
-}
+    startTransition(async () => {
+      const err = await apiSignUp(email, password, name)
+      if (err) { setError(err); return }
+      // Sign in immediately after signup
+      const signInErr = await apiSignIn(email, password)
+      if (signInErr) { setError(signInErr); return }
+      router.push('/world')
+    })
+  }
 
-export default async function LoginPage() {
-  const sessionUser = await getSessionUser()
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    boxSizing: 'border-box',
+    background: BG,
+    border: `1px solid ${BORDER}`,
+    borderRadius: 4,
+    padding: '0.7rem 0.9rem',
+    fontSize: '0.88rem',
+    color: TEXT,
+    fontFamily: 'var(--font-mono, monospace)',
+    outline: 'none',
+  }
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: '0.6rem',
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: MUTED,
+    marginBottom: 5,
+  }
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        background:
-          'radial-gradient(circle at top, rgba(124,162,103,0.16), transparent 34%), linear-gradient(180deg, #f6eddd 0%, #eadfc9 48%, #e3d4bc 100%)',
-        color: 'var(--kc-on-surface)',
-        display: 'grid',
-        placeItems: 'center',
-        padding: '2rem 1.25rem',
-      }}
-    >
-      <div
-        style={{
-          width: 'min(1040px, 100%)',
-          display: 'grid',
-          gap: '1rem',
-          gridTemplateColumns: 'minmax(0, 1.05fr) minmax(0, 0.95fr)',
-        }}
-      >
-        <section
-          style={{
-            border: '1px solid rgba(107,94,72,0.14)',
-            background: 'rgba(255,250,240,0.78)',
-            borderRadius: '32px',
-            padding: '2rem',
-            boxShadow: '0 24px 60px rgba(58,45,30,0.08)',
-          }}
-        >
-          <p
-            style={{
-              margin: 0,
-              fontSize: '0.68rem',
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
-              color: 'var(--kc-on-surface-muted)',
-            }}
-          >
-            Account Access
-          </p>
-          <h1
-            style={{
-              margin: '0.6rem 0 0',
-              fontSize: 'clamp(2.4rem, 5vw, 4rem)',
-              lineHeight: 0.92,
-              fontFamily: 'var(--font-display, monospace)',
-            }}
-          >
-            Save your village.
-          </h1>
-          <p
-            style={{
-              margin: '1rem 0 0',
-              maxWidth: 520,
-              fontSize: '0.94rem',
-              lineHeight: 1.8,
-              color: 'var(--kc-on-surface-muted)',
-            }}
-          >
-            Sign in once and Keycroft will keep your progress, lesson history,
-            and village state across devices. No password to remember if you use
-            a magic link.
-          </p>
+    <main style={{
+      minHeight: '100vh',
+      background: BG,
+      backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(196,154,58,0.07) 0%, transparent 60%)',
+      display: 'grid',
+      placeItems: 'center',
+      padding: '2rem 1.25rem',
+      fontFamily: 'var(--font-mono, monospace)',
+      color: TEXT,
+    }}>
+      <div style={{ width: 'min(400px, 100%)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-          <div
-            style={{
-              marginTop: '1.6rem',
-              display: 'grid',
-              gap: '0.9rem',
-            }}
-          >
-            {[
-              'Guest progress can be merged into your account.',
-              'Your app session stays server-side through Auth.js.',
-              'Database access remains private on the server.',
-            ].map((line) => (
-              <div
-                key={line}
+        {/* Logo */}
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            fontFamily: 'var(--font-display, monospace)',
+            fontSize: '2.4rem',
+            color: GOLD,
+            letterSpacing: '0.1em',
+            lineHeight: 1,
+          }}>
+            Keycroft
+          </div>
+          <div style={{ fontSize: '0.58rem', color: MUTED, letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: 4 }}>
+            Save your village
+          </div>
+        </div>
+
+        {/* Card */}
+        <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 8, overflow: 'hidden' }}>
+
+          {/* Tabs */}
+          <div style={{ display: 'flex', borderBottom: `1px solid ${BORDER}` }}>
+            {(['login', 'signup'] as Tab[]).map((t) => (
+              <button
+                key={t}
+                onClick={() => { setTab(t); setError('') }}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.7rem',
-                  padding: '0.9rem 1rem',
-                  borderRadius: '18px',
-                  border: '1px solid rgba(107,94,72,0.12)',
-                  background: 'rgba(250,245,235,0.9)',
+                  flex: 1,
+                  padding: '0.75rem',
+                  background: tab === t ? 'rgba(196,154,58,0.07)' : 'none',
+                  border: 'none',
+                  borderBottom: `2px solid ${tab === t ? GOLD : 'transparent'}`,
+                  color: tab === t ? TEXT : MUTED,
+                  fontSize: '0.7rem',
+                  fontWeight: tab === t ? 700 : 400,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  fontFamily: 'var(--font-mono, monospace)',
+                  transition: 'all 120ms ease',
                 }}
               >
-                <span
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    background: '#4a8c3a',
-                    flexShrink: 0,
-                  }}
-                />
-                <span style={{ fontSize: '0.88rem' }}>{line}</span>
-              </div>
+                {t === 'login' ? 'Sign In' : 'Create Account'}
+              </button>
             ))}
           </div>
 
-          <div
-            style={{
-              marginTop: '1.6rem',
-              fontSize: '0.82rem',
-              color: 'var(--kc-on-surface-muted)',
-            }}
-          >
-            Already signed in:{' '}
-            <strong style={{ color: 'var(--kc-on-surface)' }}>
-              {sessionUser?.email ?? sessionUser?.name ?? 'not yet'}
-            </strong>
+          <div style={{ padding: '1.75rem' }}>
+
+            {/* Error */}
+            {error && (
+              <div style={{
+                marginBottom: '1rem',
+                padding: '0.6rem 0.9rem',
+                background: 'rgba(248,81,73,0.08)',
+                border: `1px solid rgba(248,81,73,0.25)`,
+                borderRadius: 4,
+                fontSize: '0.72rem',
+                color: RED,
+              }}>
+                {error}
+              </div>
+            )}
+
+            {/* LOGIN */}
+            {tab === 'login' && (
+              <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label htmlFor="login-email" style={labelStyle}>Email</label>
+                  <input id="login-email" name="email" type="email" required autoFocus style={inputStyle} placeholder="you@example.com" />
+                </div>
+                <div>
+                  <label htmlFor="login-password" style={labelStyle}>Password</label>
+                  <input id="login-password" name="password" type="password" required style={inputStyle} placeholder="••••••••" />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isPending}
+                  style={{
+                    width: '100%',
+                    marginTop: '0.25rem',
+                    padding: '0.75rem',
+                    background: isPending ? 'rgba(196,154,58,0.5)' : GOLD,
+                    border: 'none',
+                    borderRadius: 4,
+                    color: BG,
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    cursor: isPending ? 'not-allowed' : 'pointer',
+                    fontFamily: 'var(--font-mono, monospace)',
+                    transition: 'opacity 120ms',
+                  }}
+                >
+                  {isPending ? 'Signing in…' : 'Sign In →'}
+                </button>
+                <p style={{ textAlign: 'center', margin: 0, fontSize: '0.65rem', color: MUTED }}>
+                  No account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => { setTab('signup'); setError('') }}
+                    style={{ background: 'none', border: 'none', color: TEXT, cursor: 'pointer', fontSize: '0.65rem', fontFamily: 'var(--font-mono,monospace)', textDecoration: 'underline' }}
+                  >
+                    Create one
+                  </button>
+                </p>
+              </form>
+            )}
+
+            {/* SIGN UP */}
+            {tab === 'signup' && (
+              <form onSubmit={handleSignUp} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label htmlFor="signup-name" style={labelStyle}>Username</label>
+                  <input id="signup-name" name="name" type="text" required autoFocus style={inputStyle} placeholder="villager42" maxLength={32} />
+                </div>
+                <div>
+                  <label htmlFor="signup-email" style={labelStyle}>Email</label>
+                  <input id="signup-email" name="email" type="email" required style={inputStyle} placeholder="you@example.com" />
+                </div>
+                <div>
+                  <label htmlFor="signup-password" style={labelStyle}>Password</label>
+                  <input id="signup-password" name="password" type="password" required style={inputStyle} placeholder="Min. 8 characters" />
+                </div>
+                <div>
+                  <label htmlFor="signup-confirm" style={labelStyle}>Confirm Password</label>
+                  <input id="signup-confirm" name="confirm" type="password" required style={inputStyle} placeholder="••••••••" />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isPending}
+                  style={{
+                    width: '100%',
+                    marginTop: '0.25rem',
+                    padding: '0.75rem',
+                    background: isPending ? 'rgba(196,154,58,0.5)' : GOLD,
+                    border: 'none',
+                    borderRadius: 4,
+                    color: BG,
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    cursor: isPending ? 'not-allowed' : 'pointer',
+                    fontFamily: 'var(--font-mono, monospace)',
+                    transition: 'opacity 120ms',
+                  }}
+                >
+                  {isPending ? 'Creating account…' : 'Create Account →'}
+                </button>
+                <p style={{ textAlign: 'center', margin: 0, fontSize: '0.65rem', color: MUTED }}>
+                  Already have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => { setTab('login'); setError('') }}
+                    style={{ background: 'none', border: 'none', color: TEXT, cursor: 'pointer', fontSize: '0.65rem', fontFamily: 'var(--font-mono,monospace)', textDecoration: 'underline' }}
+                  >
+                    Sign in
+                  </button>
+                </p>
+              </form>
+            )}
           </div>
-        </section>
-
-        <section
-          style={{
-            border: '1px solid rgba(107,94,72,0.14)',
-            background: 'rgba(255,248,238,0.92)',
-            borderRadius: '32px',
-            padding: '2rem',
-            boxShadow: '0 24px 60px rgba(58,45,30,0.08)',
-          }}
-        >
-          <p
-            style={{
-              margin: 0,
-              fontSize: '0.68rem',
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
-              color: 'var(--kc-on-surface-muted)',
-            }}
-          >
-            Sign In or Sign Up
-          </p>
-
-          {authFeatures.hasMagicLinkProvider ? (
-            <form action={sendMagicLink} style={{ marginTop: '1rem' }}>
-              <label
-                htmlFor="login-email"
-                style={{
-                  display: 'block',
-                  fontSize: '0.86rem',
-                  fontWeight: 700,
-                  marginBottom: '0.55rem',
-                }}
-              >
-                Email address
-              </label>
-              <input
-                id="login-email"
-                name="email"
-                type="email"
-                required
-                placeholder="you@example.com"
-                style={{
-                  width: '100%',
-                  borderRadius: '18px',
-                  border: '1px solid rgba(107,94,72,0.16)',
-                  background: 'rgba(255,255,255,0.92)',
-                  padding: '0.95rem 1rem',
-                  fontSize: '0.95rem',
-                  color: 'var(--kc-on-surface)',
-                }}
-              />
-
-              <button
-                type="submit"
-                style={{
-                  width: '100%',
-                  marginTop: '0.95rem',
-                  borderRadius: '999px',
-                  border: '1px solid rgba(74,140,58,0.24)',
-                  background: '#4a8c3a',
-                  color: '#fff',
-                  padding: '0.95rem 1.1rem',
-                  fontWeight: 700,
-                  fontSize: '0.86rem',
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                }}
-              >
-                Email me a sign-in link
-              </button>
-
-              <p
-                style={{
-                  margin: '0.85rem 0 0',
-                  fontSize: '0.8rem',
-                  lineHeight: 1.7,
-                  color: 'var(--kc-on-surface-muted)',
-                }}
-              >
-                No password to remember. We send you a secure login link and
-                create the account automatically if it does not exist yet.
-              </p>
-            </form>
-          ) : (
-            <div
-              style={{
-                marginTop: '1rem',
-                borderRadius: '20px',
-                border: '1px solid rgba(107,94,72,0.14)',
-                background: 'rgba(248,242,232,0.88)',
-                padding: '1rem 1rem 1.1rem',
-              }}
-            >
-              <p style={{ margin: 0, fontSize: '0.86rem', fontWeight: 700 }}>
-                Email login is not configured yet.
-              </p>
-              <p
-                style={{
-                  margin: '0.55rem 0 0',
-                  fontSize: '0.82rem',
-                  lineHeight: 1.7,
-                  color: 'var(--kc-on-surface-muted)',
-                }}
-              >
-                Add the SMTP values from `.env.example`, then restart the app
-                and this page will activate automatically.
-              </p>
-            </div>
-          )}
-
-          {authFeatures.hasTestCredentialsProvider ? (
-            <form
-              action={signInTestAccount}
-              style={{
-                marginTop: '1.4rem',
-                paddingTop: '1.2rem',
-                borderTop: '1px solid rgba(107,94,72,0.12)',
-              }}
-            >
-              <label
-                htmlFor="test-account-email"
-                style={{
-                  display: 'block',
-                  fontSize: '0.82rem',
-                  fontWeight: 700,
-                  marginBottom: '0.55rem',
-                }}
-              >
-                Local test account
-              </label>
-              <input
-                id="test-account-email"
-                name="email"
-                type="email"
-                defaultValue="builder@keycroft.local"
-                style={{
-                  width: '100%',
-                  borderRadius: '18px',
-                  border: '1px solid rgba(107,94,72,0.16)',
-                  background: 'rgba(255,255,255,0.92)',
-                  padding: '0.9rem 1rem',
-                  fontSize: '0.92rem',
-                }}
-              />
-              <button
-                type="submit"
-                style={{
-                  width: '100%',
-                  marginTop: '0.85rem',
-                  borderRadius: '999px',
-                  border: '1px solid rgba(107,94,72,0.18)',
-                  background: 'transparent',
-                  color: 'var(--kc-on-surface)',
-                  padding: '0.9rem 1rem',
-                  fontWeight: 700,
-                  fontSize: '0.82rem',
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                }}
-              >
-                Sign in with test account
-              </button>
-            </form>
-          ) : null}
-
-          <div
-            style={{
-              marginTop: '1.3rem',
-              fontSize: '0.8rem',
-              color: 'var(--kc-on-surface-muted)',
-            }}
-          >
-            Looking for account controls after sign-in?{' '}
-            <Link href="/settings">Open settings</Link>
-          </div>
-        </section>
+        </div>
       </div>
     </main>
   )
