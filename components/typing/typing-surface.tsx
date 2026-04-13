@@ -20,117 +20,85 @@ import {
   type TypingSessionState,
 } from '@/lib/typing/text-runner'
 
+const BG_TEXT   = 'rgba(22,27,34,0.85)'
+const TEXT      = '#e6edf3'
+const MUTED     = '#7d8590'
+const GOLD      = '#c49a3a'
+const GREEN     = '#3fb950'
+const RED       = '#f85149'
+const BORDER    = '#21262d'
+
 const KB_ROWS = [
   ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
   ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'],
   ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
 ]
 
-type KeyboardVizProps = {
-  keyFocus?: string[]
-  expectedKey: string | null
-  feedback: { key: string; tone: 'correct' | 'incorrect' } | null
-  onPressKey: (key: string) => void
+function formatElapsed(ms: number): string {
+  const s = Math.floor(ms / 1000)
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
 }
 
-function getKeyButtonLabel(key: string): string {
-  if (key === ';') {
-    return 'Type semicolon'
-  }
-
-  return `Type ${key}`
-}
-
+/* ── Keyboard visualization ───────────────────────────────────── */
 function KeyboardViz({
   keyFocus,
   expectedKey,
   feedback,
-  onPressKey,
-}: KeyboardVizProps) {
-  const focus = new Set((keyFocus ?? []).map((key) => key.toLowerCase()))
+}: {
+  keyFocus?: string[]
+  expectedKey: string | null
+  feedback: { key: string; tone: 'correct' | 'incorrect' } | null
+}) {
+  const focus = new Set((keyFocus ?? []).map((k) => k.toLowerCase()))
 
   return (
-    <div className="flex select-none flex-col items-center gap-1.5">
-      {KB_ROWS.map((row, rowIndex) => (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+      {KB_ROWS.map((row, ri) => (
         <div
-          key={rowIndex}
-          className="flex gap-1"
+          key={ri}
           style={{
-            marginLeft: rowIndex === 1 ? 14 : rowIndex === 2 ? 28 : 0,
+            display: 'flex',
+            gap: 4,
+            marginLeft: ri === 1 ? 14 : ri === 2 ? 28 : 0,
           }}
         >
           {row.map((key) => {
-            const active = focus.size === 0 || focus.has(key)
-            const keyState =
-              feedback?.key === key
-                ? feedback.tone === 'correct'
-                  ? 'correct'
-                  : 'incorrect'
-                : expectedKey === key
-                  ? 'expected'
-                  : active
-                    ? 'focus'
-                    : 'idle'
+            const isFocus   = focus.size === 0 || focus.has(key)
+            const isExpect  = expectedKey === key
+            const fbTone    = feedback?.key === key ? feedback.tone : null
 
-            const styleByState =
-              keyState === 'correct'
-                ? {
-                    border: '1px solid rgba(74,140,58,0.52)',
-                    background: 'rgba(223,234,213,0.98)',
-                    color: 'var(--kc-accent-on-surface)',
-                    boxShadow: '0 10px 18px rgba(74,140,58,0.16)',
-                    transform: 'translateY(-1px)',
-                  }
-                : keyState === 'incorrect'
-                  ? {
-                      border: '1px solid rgba(184,52,27,0.44)',
-                      background: 'rgba(248,226,220,0.98)',
-                      color: 'var(--kc-error)',
-                      boxShadow: '0 10px 18px rgba(184,52,27,0.12)',
-                      transform: 'translateY(-1px)',
-                    }
-                  : keyState === 'expected'
-                    ? {
-                        border: '1px solid rgba(196,155,60,0.48)',
-                        background: 'rgba(252,244,216,0.98)',
-                        color: 'var(--kc-on-surface)',
-                        boxShadow: '0 10px 18px rgba(196,155,60,0.12)',
-                        transform: 'translateY(-1px)',
-                      }
-                    : keyState === 'focus'
-                      ? {
-                          border: '1px solid rgba(74,140,58,0.36)',
-                          background: 'rgba(238,245,229,0.98)',
-                          color: 'var(--kc-accent-on-surface)',
-                          boxShadow: '0 10px 18px rgba(74,140,58,0.10)',
-                          transform: 'translateY(0px)',
-                        }
-                      : {
-                          border: '1px solid rgba(108,94,72,0.18)',
-                          background: 'rgba(255,250,240,0.55)',
-                          color: 'rgba(107,94,72,0.55)',
-                          boxShadow: 'none',
-                          transform: 'translateY(0px)',
-                        }
+            let bg, border, color
+            if (fbTone === 'correct') {
+              bg = 'rgba(63,185,80,0.2)'; border = 'rgba(63,185,80,0.6)'; color = GREEN
+            } else if (fbTone === 'incorrect') {
+              bg = 'rgba(248,81,73,0.18)'; border = 'rgba(248,81,73,0.5)'; color = RED
+            } else if (isExpect) {
+              bg = 'rgba(196,154,58,0.18)'; border = 'rgba(196,154,58,0.6)'; color = GOLD
+            } else if (isFocus) {
+              bg = 'rgba(196,154,58,0.07)'; border = 'rgba(196,154,58,0.25)'; color = GOLD
+            } else {
+              bg = 'rgba(255,255,255,0.04)'; border = BORDER; color = 'rgba(125,133,144,0.5)'
+            }
 
             return (
-              <button
-                aria-label={getKeyButtonLabel(key)}
-                data-key={key}
-                data-key-state={keyState}
+              <div
                 key={key}
-                onClick={() => onPressKey(key)}
-                onMouseDown={(event) => {
-                  event.preventDefault()
-                }}
-                className="flex h-8 w-8 items-center justify-center rounded-[10px] border text-[0.62rem] font-semibold transition-all"
                 style={{
-                  ...styleByState,
+                  width: 28, height: 28,
+                  borderRadius: 4,
+                  border: `1px solid ${border}`,
+                  background: bg,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '0.6rem',
+                  fontWeight: 700,
+                  color,
+                  letterSpacing: '0.04em',
+                  transition: 'all 80ms ease',
+                  userSelect: 'none',
                 }}
-                type="button"
               >
                 {key.toUpperCase()}
-              </button>
+              </div>
             )
           })}
         </div>
@@ -139,147 +107,82 @@ function KeyboardViz({
   )
 }
 
-function StatPill({
-  icon,
-  value,
-  sub,
-}: {
-  icon: string
-  value: string
-  sub?: string
-}) {
-  return (
-    <div className="flex items-center gap-2 rounded-full border border-[rgba(107,94,72,0.16)] bg-[rgba(255,250,240,0.72)] px-4 py-2 shadow-[0_8px_20px_rgba(58,45,30,0.05)]">
-      <span className="text-sm">{icon}</span>
-      <span className="text-[0.82rem] font-semibold text-[var(--kc-on-surface)]">
-        {value}
-      </span>
-      {sub && (
-        <span className="text-[0.58rem] uppercase tracking-[0.18em] text-[var(--kc-on-surface-muted)]">
-          {sub}
-        </span>
-      )}
-    </div>
-  )
-}
-
-function formatElapsed(ms: number): string {
-  const totalSeconds = Math.floor(ms / 1000)
-  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0')
-  const seconds = (totalSeconds % 60).toString().padStart(2, '0')
-
-  return `${minutes}:${seconds}`
-}
-
+/* ── Main component ───────────────────────────────────────────── */
 type TypingSurfaceProps = {
   prompt: PracticeText
   keyFocus?: string[]
   onComplete: (session: TypingSessionState) => void
 }
 
-export function TypingSurface({
-  prompt,
-  keyFocus,
-  onComplete,
-}: TypingSurfaceProps) {
+export function TypingSurface({ prompt, keyFocus, onComplete }: TypingSurfaceProps) {
   const [session, setSession] = useState(() => createTypingSession(prompt.text))
-  const [now, setNow] = useState(Date.now())
+  const [now, setNow]         = useState(Date.now())
   const [focused, setFocused] = useState(false)
-  const [keyboardFeedback, setKeyboardFeedback] = useState<{
-    key: string
-    tone: 'correct' | 'incorrect'
-  } | null>(null)
+  const [feedback, setFeedback] = useState<{ key: string; tone: 'correct' | 'incorrect' } | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  // Auto-focus
+  useEffect(() => { inputRef.current?.focus() }, [])
+
+  // Timer tick
   useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
-
-  useEffect(() => {
-    if (session.startedAt === null || session.isComplete) {
-      return
-    }
-
-    const intervalId = window.setInterval(() => {
-      setNow(Date.now())
-    }, 250)
-
-    return () => window.clearInterval(intervalId)
+    if (!session.startedAt || session.isComplete) return
+    const id = window.setInterval(() => setNow(Date.now()), 250)
+    return () => window.clearInterval(id)
   }, [session.startedAt, session.isComplete])
 
+  // Clear feedback flash
   useEffect(() => {
-    if (keyboardFeedback === null) {
-      return
-    }
+    if (!feedback) return
+    const id = window.setTimeout(() => setFeedback(null), 160)
+    return () => window.clearTimeout(id)
+  }, [feedback])
 
-    const timeoutId = window.setTimeout(() => {
-      setKeyboardFeedback(null)
-    }, 180)
-
-    return () => window.clearTimeout(timeoutId)
-  }, [keyboardFeedback])
-
-  const characters = getCharacterStatuses(session)
-  const cursorIndex = session.inputValue.length
-  const errors = getCurrentErrorCount(session)
-  const totalTyped = session.inputValue.length
+  const characters   = getCharacterStatuses(session)
+  const cursor       = session.inputValue.length
+  const errors       = getCurrentErrorCount(session)
+  const totalTyped   = session.inputValue.length
   const correctTyped = totalTyped - errors
-  const accuracy =
-    totalTyped === 0 ? 100 : Math.round((correctTyped / totalTyped) * 100)
-  const elapsedMs = session.startedAt ? now - session.startedAt : 0
-  const elapsedMinutes = elapsedMs / 60000
-  const wpm =
-    elapsedMinutes > 0 ? Math.round((correctTyped / 5) / elapsedMinutes) : 0
-  const progress = Math.round((cursorIndex / prompt.text.length) * 100)
-  const expectedKey = session.isComplete
-    ? null
-    : session.targetText[cursorIndex]?.toLowerCase() ?? null
+  const accuracy     = totalTyped === 0 ? 100 : Math.round((correctTyped / totalTyped) * 100)
+  const elapsedMs    = session.startedAt ? now - session.startedAt : 0
+  const wpm          = elapsedMs > 0 ? Math.round((correctTyped / 5) / (elapsedMs / 60000)) : 0
+  const expectedKey  = session.isComplete ? null : session.targetText[cursor]?.toLowerCase() ?? null
 
   function applyAction(action: TypingKeyAction, sourceKey?: string) {
-    const feedbackKey =
-      sourceKey?.toLowerCase() ??
-      (action.type === 'input' ? action.value.toLowerCase() : null)
-
-    if (action.type === 'input' && feedbackKey !== null) {
-      setKeyboardFeedback({
-        key: feedbackKey,
-        tone: feedbackKey === expectedKey ? 'correct' : 'incorrect',
-      })
+    const fk = sourceKey?.toLowerCase() ?? (action.type === 'input' ? action.value.toLowerCase() : null)
+    if (action.type === 'input' && fk) {
+      setFeedback({ key: fk, tone: fk === expectedKey ? 'correct' : 'incorrect' })
     }
-
-    const nextSession = applyTypingAction(session, action, Date.now())
-    setSession(nextSession)
-
-    if (nextSession.isComplete) {
-      onComplete(nextSession)
-    }
+    const next = applyTypingAction(session, action, Date.now())
+    setSession(next)
+    if (next.isComplete) onComplete(next)
   }
 
-  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    const action = normalizeTypingKey(event)
-
-    if (action.type === 'ignore') {
-      return
-    }
-
-    event.preventDefault()
+  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    const action = normalizeTypingKey(e)
+    if (action.type === 'ignore') return
+    e.preventDefault()
     applyAction(action)
   }
 
-  function handlePaste(event: ClipboardEvent<HTMLInputElement>) {
-    event.preventDefault()
-  }
-
-  function handleKeyboardKeyPress(key: string) {
-    inputRef.current?.focus()
-    applyAction({ type: 'input', value: key }, key)
-  }
+  function handlePaste(e: ClipboardEvent<HTMLInputElement>) { e.preventDefault() }
 
   return (
-    <section
-      className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]"
+    <div
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '1.5rem',
+        padding: '1.5rem',
+        cursor: 'text',
+        fontFamily: 'var(--font-mono, monospace)',
+      }}
       onClick={() => inputRef.current?.focus()}
     >
+      {/* Hidden input */}
       <input
         aria-label="Typing input"
         autoFocus
@@ -294,145 +197,108 @@ export function TypingSurface({
         value=""
       />
 
-      <article className="rounded-[36px] border border-[var(--kc-line-light)] bg-[linear-gradient(180deg,rgba(255,250,240,0.97)_0%,rgba(244,236,219,0.97)_100%)] p-6 shadow-[0_24px_60px_rgba(58,45,30,0.08)] md:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.22em] text-[var(--kc-on-surface-muted)]">
-              {prompt.label}
-            </p>
-            <h1 className="text-[clamp(1.8rem,3vw,2.6rem)] leading-none text-[var(--kc-on-surface)]">
-              {prompt.focus}
-            </h1>
-            <p className="max-w-xl text-sm leading-7 text-[var(--kc-on-surface-muted)]">
-              Let the line stay airy and even. Backspace is allowed, but the
-              real gain comes from keeping corrections low.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2.5">
-            <StatPill icon="⚡" value={String(wpm)} sub="WPM" />
-            <StatPill icon="🎯" value={`${accuracy}%`} sub="ACC" />
-            <StatPill icon="⏱" value={formatElapsed(elapsedMs)} />
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-[32px] border border-[rgba(107,94,72,0.16)] bg-[rgba(255,250,240,0.72)] px-5 py-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:px-7 md:py-8">
+      {/* ── Stats row ─────────────────────────────────────── */}
+      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+        {[
+          { icon: '⚡', val: String(wpm), label: 'WPM' },
+          { icon: '🎯', val: `${accuracy}%`, label: 'ACC' },
+          { icon: '⏱', val: formatElapsed(elapsedMs), label: '' },
+        ].map(({ icon, val, label }) => (
           <div
-            className="flex flex-wrap text-[clamp(1.2rem,2vw,1.65rem)] leading-[1.9] tracking-[0.01em] text-[var(--kc-on-surface)] select-none"
-            data-testid="typing-line"
+            key={label || 'time'}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '0.4rem 1rem',
+              background: 'rgba(22,27,34,0.8)',
+              border: `1px solid ${BORDER}`,
+              borderRadius: 20,
+              fontSize: '0.8rem',
+              color: TEXT,
+              letterSpacing: '0.04em',
+            }}
           >
-            {characters.map((character, index) => {
-              const isCursor = !session.isComplete && index === cursorIndex
-              const color =
-                character.status === 'correct'
-                  ? 'var(--kc-on-surface)'
-                  : character.status === 'incorrect'
-                    ? 'var(--kc-error)'
-                    : isCursor
-                      ? 'rgba(28,46,30,0.45)'
-                      : 'rgba(28,46,30,0.28)'
-
-              return (
-                <Fragment key={index}>
-                  {isCursor && (
-                    <span
-                      className="mr-px inline-block h-[1em] w-0.5 shrink-0 rounded-full"
-                      style={{
-                        background: 'var(--kc-accent)',
-                        animation: focused
-                          ? 'kc-blink 0.85s ease-in-out infinite'
-                          : 'none',
-                        opacity: focused ? 1 : 0.5,
-                      }}
-                    />
-                  )}
-                  <span
-                    data-status={character.status}
-                    style={{
-                      color,
-                      textDecorationLine:
-                        character.status === 'incorrect' ? 'underline' : 'none',
-                      textDecorationColor:
-                        character.status === 'incorrect'
-                          ? 'var(--kc-error)'
-                          : 'transparent',
-                      textDecorationThickness:
-                        character.status === 'incorrect' ? '2px' : '0px',
-                    }}
-                  >
-                    {character.expected === ' ' ? '\u00A0' : character.expected}
-                  </span>
-                </Fragment>
-              )
-            })}
-
-            {!session.isComplete && cursorIndex >= characters.length && (
-              <span
-                className="inline-block h-[1em] w-0.5 rounded-full"
-                style={{
-                  background: 'var(--kc-accent)',
-                  animation: 'kc-blink 0.85s ease-in-out infinite',
-                }}
-              />
-            )}
+            <span style={{ fontSize: '0.85rem' }}>{icon}</span>
+            <span style={{ fontWeight: 600 }}>{val}</span>
+            {label && <span style={{ fontSize: '0.6rem', color: MUTED, letterSpacing: '0.12em' }}>{label}</span>}
           </div>
-        </div>
+        ))}
+      </div>
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--kc-on-surface-muted)]">
-          <p className="leading-6">
-            {session.startedAt === null
-              ? 'Click into the lesson and start with the first key.'
-              : 'Keep a gentle pace. Clean rhythm beats rushing.'}
-          </p>
-          <p className="rounded-full bg-[rgba(74,140,58,0.1)] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[var(--kc-accent-on-surface)]">
-            {progress}% through the line
-          </p>
-        </div>
-      </article>
+      {/* ── Text box ──────────────────────────────────────── */}
+      <div style={{
+        width: '100%',
+        maxWidth: 680,
+        background: BG_TEXT,
+        border: `1px solid ${BORDER}`,
+        borderRadius: 6,
+        padding: '1.5rem 2rem',
+      }}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)',
+            lineHeight: 2,
+            letterSpacing: '0.02em',
+            userSelect: 'none',
+          }}
+          data-testid="typing-line"
+        >
+          {characters.map((ch, i) => {
+            const isCursor = !session.isComplete && i === cursor
+            const charColor =
+              ch.status === 'correct'   ? TEXT :
+              ch.status === 'incorrect' ? RED  :
+              isCursor                  ? 'rgba(230,237,243,0.4)' :
+                                          'rgba(125,133,144,0.45)'
 
-      <aside className="flex h-full flex-col gap-4 rounded-[32px] border border-[var(--kc-line-light)] bg-[rgba(249,244,234,0.92)] p-5 shadow-[0_24px_60px_rgba(58,45,30,0.06)]">
-        <div className="space-y-1">
-          <p className="text-xs uppercase tracking-[0.22em] text-[var(--kc-on-surface-muted)]">
-            Lesson board
-          </p>
-          <h2 className="text-2xl text-[var(--kc-on-surface)]">Key map</h2>
-          <p className="text-sm leading-6 text-[var(--kc-on-surface-muted)]">
-            The highlighted keys show the movement this lesson is trying to
-            teach your hands.
-          </p>
+            return (
+              <Fragment key={i}>
+                {isCursor && (
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      width: 2, height: '1.1em',
+                      marginRight: 1,
+                      background: GOLD,
+                      borderRadius: 1,
+                      flexShrink: 0,
+                      alignSelf: 'center',
+                      animation: focused ? 'kc-blink 0.85s ease-in-out infinite' : 'none',
+                      opacity: focused ? 1 : 0.6,
+                    }}
+                  />
+                )}
+                <span
+                  style={{
+                    color: charColor,
+                    textDecoration: ch.status === 'incorrect' ? `underline ${RED} 2px` : 'none',
+                  }}
+                >
+                  {ch.expected === ' ' ? '\u00A0' : ch.expected}
+                </span>
+              </Fragment>
+            )
+          })}
+          {!session.isComplete && cursor >= characters.length && (
+            <span style={{
+              display: 'inline-block', width: 2, height: '1.1em',
+              background: GOLD, borderRadius: 1, alignSelf: 'center',
+              animation: 'kc-blink 0.85s ease-in-out infinite',
+            }} />
+          )}
         </div>
+      </div>
 
-        <div className="rounded-[24px] border border-[rgba(107,94,72,0.14)] bg-[rgba(255,250,240,0.86)] p-4">
-          <KeyboardViz
-            expectedKey={expectedKey}
-            feedback={keyboardFeedback}
-            keyFocus={keyFocus}
-            onPressKey={handleKeyboardKeyPress}
-          />
-        </div>
+      {/* ── Hint ──────────────────────────────────────────── */}
+      <p style={{ fontSize: '0.72rem', color: MUTED, letterSpacing: '0.08em' }}>
+        {session.startedAt === null
+          ? 'Click anywhere and start typing...'
+          : 'Keep a steady rhythm.'}
+      </p>
 
-        <div className="rounded-[24px] border border-[rgba(107,94,72,0.14)] bg-[rgba(255,250,240,0.72)] p-4">
-          <p className="text-xs uppercase tracking-[0.18em] text-[var(--kc-on-surface-muted)]">
-            Live feel
-          </p>
-          <dl className="mt-3 space-y-3 text-sm text-[var(--kc-on-surface)]">
-            <div className="flex items-center justify-between gap-4">
-              <dt className="text-[var(--kc-on-surface-muted)]">Progress</dt>
-              <dd>
-                {cursorIndex}/{prompt.text.length}
-              </dd>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <dt className="text-[var(--kc-on-surface-muted)]">Open errors</dt>
-              <dd>{errors}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <dt className="text-[var(--kc-on-surface-muted)]">Focus state</dt>
-              <dd>{focused ? 'Listening' : 'Click to refocus'}</dd>
-            </div>
-          </dl>
-        </div>
-      </aside>
-    </section>
+      {/* ── Keyboard ──────────────────────────────────────── */}
+      <KeyboardViz keyFocus={keyFocus} expectedKey={expectedKey} feedback={feedback} />
+    </div>
   )
 }

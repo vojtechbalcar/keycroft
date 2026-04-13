@@ -69,16 +69,18 @@ describe('VillageTypePage', () => {
       rerender = rendered.rerender
     })
 
-    expect(screen.getByText(/gathering your lesson atlas/i)).toBeInTheDocument()
-
     await act(async () => {
       rerender(<VillageTypePage params={params} />)
     })
 
     expect(
-      await screen.findByRole('heading', { name: /meadow farm/i }),
+      await screen.findByRole('link', { name: /meadow farm/i }),
     ).toBeInTheDocument()
-    expect(screen.getByText(/foundation keys/i)).toBeInTheDocument()
+    expect(screen.getByText(/foundation/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /keys f and j/i })).toHaveAttribute(
+      'href',
+      '/world/meadow-farm/type/meadow-farm-foundation-1-intro',
+    )
     expect(routerSpies.replace).not.toHaveBeenCalledWith('/onboarding')
   })
 })
