@@ -44,8 +44,8 @@ export async function readRpgProgress(userId: string): Promise<RpgProgress> {
     skillPoints: user.skillPoints,
     unlockedSkills: user.unlockedSkills as SkillId[],
     buildingLevels: (user.buildingLevels as BuildingLevels) ?? { townHall: 0, workshop: 0, tavern: 0 },
-    clearedNodeIds: new Set(user.nodeCompletions.map((n) => n.nodeId)),
-    clearedChapterIds: new Set(user.chapterProgresses.map((c) => c.chapterId)),
+    clearedNodeIds: new Set(user.nodeCompletions.map((n: { nodeId: string }) => n.nodeId)),
+    clearedChapterIds: new Set(user.chapterProgresses.map((c: { chapterId: string }) => c.chapterId)),
   }
 }
 
