@@ -48,7 +48,7 @@ export default function LoginPage() {
     startTransition(async () => {
       const err = await apiSignIn(email, password)
       if (err) { setError(err); return }
-      router.push('/world')
+      router.push('/map')
     })
   }
 
@@ -70,7 +70,7 @@ export default function LoginPage() {
       // Sign in immediately after signup
       const signInErr = await apiSignIn(email, password)
       if (signInErr) { setError(signInErr); return }
-      router.push('/world')
+      router.push('/map')
     })
   }
 
