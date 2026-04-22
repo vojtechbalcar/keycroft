@@ -33,6 +33,12 @@ model User {
   typingRuns                TypingRun[]
   createdAt                 DateTime           @default(now())
   updatedAt                 DateTime           @updatedAt
+  gold                      Int                @default(0)
+  rareMaterials             Json               @default("{}")
+  skillPoints               Int                @default(0)
+  unlockedSkills            String[]
+  buildingLevels            Json               @default("{}")
+  nodeCompletions           NodeCompletion[]
 }
 
 model Account {
@@ -99,8 +105,22 @@ model TypingRun {
   wpm             Int
   accuracy        Int
   correctedErrors Int
+  isBossAttempt   Boolean  @default(false)
+  rareDrop        String?
+  goldEarned      Int?
   createdAt       DateTime @default(now())
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, completedAt])
+}
+
+model NodeCompletion {
+  id        String   @id @default(cuid())
+  userId    String
+  chapterId String
+  nodeId    String
+  bestScore Int?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, chapterId, nodeId])
 }
