@@ -30,7 +30,7 @@ export function applySkillsToLessonGold(
   unlockedSkills: SkillId[],
 ): number {
   if (unlockedSkills.includes('resource-magnet')) {
-    return Math.floor(baseGold * 1.15)
+    return Math.round(baseGold * 1.15)
   }
   return baseGold
 }
