@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import type { Prisma } from '@prisma/client'
 import type { BuildingLevels } from '@/lib/map/map-rules'
 import type { SkillId } from '@/lib/skills/skill-definitions'
 
@@ -78,7 +79,7 @@ export async function recordBossAttempt(
   score: number,
   skillPointsEarned: number,
 ): Promise<void> {
-  await db.$transaction(async (tx) => {
+  await db.$transaction(async (tx: Prisma.TransactionClient) => {
     const updates: Record<string, unknown> = {
       gold: { increment: goldEarned },
     }
@@ -118,7 +119,7 @@ export async function upgradeBuildingInDb(
   rareMaterialCost: number,
   newLevel: number,
 ): Promise<void> {
-  await db.$transaction(async (tx) => {
+  await db.$transaction(async (tx: Prisma.TransactionClient) => {
     const user = await tx.user.findUnique({
       where: { id: userId },
       select: { buildingLevels: true, rareMaterials: true },
@@ -148,7 +149,7 @@ export async function unlockSkillInDb(
   skillId: SkillId,
   pointCost: number,
 ): Promise<void> {
-  await db.$transaction(async (tx) => {
+  await db.$transaction(async (tx: Prisma.TransactionClient) => {
     const user = await tx.user.findUnique({ where: { id: userId }, select: { unlockedSkills: true } })
     const current = (user?.unlockedSkills ?? []) as SkillId[]
 
