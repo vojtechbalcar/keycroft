@@ -119,13 +119,33 @@ a {
 
 .kc-glow { animation: kc-glow-pulse 3.2s ease-in-out infinite; }
 
+/* ── Map lamp flicker (cleared nodes) ────────────────────────── */
+@keyframes kc-lamp-flicker {
+  0%, 100% { opacity: 1;    transform: scale(1);    }
+  20%       { opacity: 0.92; transform: scale(0.98); }
+  40%       { opacity: 1;    transform: scale(1.01); }
+  70%       { opacity: 0.95; transform: scale(0.99); }
+}
+
+.kc-lamp-lit { animation: kc-lamp-flicker 4s ease-in-out infinite; }
+
+/* ── Map lamp pulse (available, not yet cleared) ─────────────── */
+@keyframes kc-lamp-available {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(196,154,58,0.2), 0 0 10px 3px rgba(196,154,58,0.1); }
+  50%       { box-shadow: 0 0 0 3px rgba(196,154,58,0.35), 0 0 16px 6px rgba(196,154,58,0.2); }
+}
+
+.kc-lamp-available { animation: kc-lamp-available 2.4s ease-in-out infinite; }
+
 /* ── Reduced motion ──────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .kc-cursor,
   .kc-smoke-1,
   .kc-smoke-2,
   .kc-smoke-3,
-  .kc-glow {
+  .kc-glow,
+  .kc-lamp-lit,
+  .kc-lamp-available {
     animation: none;
   }
 }
