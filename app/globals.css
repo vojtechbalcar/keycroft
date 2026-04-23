@@ -137,6 +137,89 @@ a {
 
 .kc-lamp-available { animation: kc-lamp-available 2.4s ease-in-out infinite; }
 
+/* ── Map hotspots ────────────────────────────────────────────── */
+
+/* Invisible clickable area positioned over each lantern */
+.map-hotspot {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  position: relative;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Glow ring — hidden by default, revealed on hover */
+.map-hotspot::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+  pointer-events: none;
+}
+
+/* Floating label — hidden by default */
+.map-hotspot::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  background: rgba(5, 9, 26, 0.95);
+  color: #e6edf3;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 5px 11px;
+  border-radius: 6px;
+  border: 1px solid rgba(196, 154, 58, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+/* Lesson hover — amber */
+.map-hotspot:hover::before {
+  border-color: rgba(245, 158, 11, 0.9);
+  box-shadow: 0 0 16px 6px rgba(245, 158, 11, 0.5);
+}
+.map-hotspot:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Boss variant — purple */
+.map-hotspot--boss:hover::before {
+  border-color: rgba(168, 85, 247, 0.9);
+  box-shadow: 0 0 16px 6px rgba(168, 85, 247, 0.5);
+}
+.map-hotspot--boss::after {
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+/* Cleared — keep a faint permanent ring so user knows it's done */
+.map-hotspot--cleared::before {
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.map-hotspot--cleared:hover::before {
+  border-color: rgba(245, 158, 11, 1);
+  box-shadow: 0 0 18px 7px rgba(245, 158, 11, 0.6);
+}
+
+.map-hotspot--cleared-boss::before {
+  border-color: rgba(168, 85, 247, 0.3);
+}
+.map-hotspot--cleared-boss:hover::before {
+  border-color: rgba(168, 85, 247, 1);
+  box-shadow: 0 0 18px 7px rgba(168, 85, 247, 0.6);
+}
+
 /* ── Reduced motion ──────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .kc-cursor,
