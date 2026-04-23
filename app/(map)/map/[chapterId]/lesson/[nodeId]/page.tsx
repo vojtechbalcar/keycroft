@@ -4,7 +4,8 @@ import { getSessionUser } from '@/lib/auth/get-session-user'
 import { readRpgProgress } from '@/lib/storage/rpg-progress'
 import { getChapterDefinition, type ChapterId } from '@/lib/map/chapter-definitions'
 import { isChapterUnlocked } from '@/lib/map/map-rules'
-import { LessonSession } from '@/components/map/LessonSession'
+import { LessonPad } from '@/components/map/LessonPad'
+import type { PracticeText } from '@/lib/typing/practice-texts'
 
 type Props = { params: Promise<{ chapterId: string; nodeId: string }> }
 
@@ -21,13 +22,24 @@ export default async function LessonPage({ params }: Props) {
   }
 
   const progress = await readRpgProgress(sessionUser.id)
-
-  if (!isChapterUnlocked(chapter.buildingUnlockKey, progress.buildingLevels)) {
-    redirect('/map')
-  }
+  if (!isChapterUnlocked(chapter.buildingUnlockKey, progress.buildingLevels)) redirect('/map')
 
   const node = chapter.nodes.find((n) => n.id === nodeId && n.type === 'lesson')
   if (!node) notFound()
+
+  // Build a PracticeText from the lesson's word bank
+  const prompt: PracticeText = {
+    id: node.id,
+    label: node.title,
+    focus: node.keyFocus,
+    text: [...node.wordBank, ...node.wordBank].slice(0, 20).join(' '),
+  }
+
+  // Parse keyFocus into individual keys for the keyboard visualizer
+  const keyFocusParsed = node.keyFocus
+    .toLowerCase()
+    .split(/[\s+,]+/)
+    .filter((k) => k.length === 1)
 
   return (
     <div style={{
@@ -36,29 +48,26 @@ export default async function LessonPage({ params }: Props) {
       fontFamily: 'var(--font-mono, monospace)',
       color: '#e6edf3',
     }}>
-      <div style={{ maxWidth: 540, margin: '0 auto', padding: '32px 20px 80px' }}>
-
-        {/* Header */}
-        <div style={{ marginBottom: 32 }}>
-          <Link
-            href="/map"
-            style={{ fontSize: 12, color: '#c49a3a', letterSpacing: '0.06em', textDecoration: 'none' }}
-          >
+      <div style={{ maxWidth: 760, margin: '0 auto', padding: '28px 20px 60px' }}>
+        <div style={{ marginBottom: 20 }}>
+          <Link href="/map" style={{ fontSize: 12, color: '#c49a3a', letterSpacing: '0.06em', textDecoration: 'none' }}>
             ← Map
           </Link>
-          <h1 style={{ margin: '12px 0 4px', fontSize: 20, fontWeight: 700, color: '#e6edf3' }}>
-            {node.title}
-          </h1>
-          <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.06em' }}>
-            {chapter.name} · {node.keyFocus}
-          </p>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginTop: 10 }}>
+            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#e6edf3' }}>
+              {node.title}
+            </h1>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em' }}>
+              {chapter.name} · {node.keyFocus}
+            </span>
+          </div>
         </div>
 
-        <LessonSession
+        <LessonPad
           chapterId={chapterId as ChapterId}
           nodeId={nodeId}
-          wordBank={node.wordBank}
-          title={node.title}
+          prompt={prompt}
+          keyFocusParsed={keyFocusParsed}
         />
       </div>
     </div>

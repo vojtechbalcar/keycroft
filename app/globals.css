@@ -203,6 +203,18 @@ a {
   border-color: rgba(168, 85, 247, 0.35);
 }
 
+/* Next — bright pulsing, most prominent */
+.map-hotspot--next::before {
+  border-color: rgba(245, 158, 11, 0.9);
+  box-shadow: 0 0 18px 7px rgba(245, 158, 11, 0.55);
+  animation: kc-lamp-available 2s ease-in-out infinite;
+}
+.map-hotspot--boss.map-hotspot--next::before {
+  border-color: rgba(168, 85, 247, 0.9);
+  box-shadow: 0 0 18px 7px rgba(168, 85, 247, 0.55);
+  animation: kc-lamp-available 2s ease-in-out infinite;
+}
+
 /* Cleared — keep a faint permanent ring so user knows it's done */
 .map-hotspot--cleared::before {
   border-color: rgba(245, 158, 11, 0.3);
